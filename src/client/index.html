@@ -1,0 +1,426 @@
+<html>
+  <head>
+     <title>MINI CROSSWORD by Last Puzzle Bender</title>
+     <link rel="stylesheet" type="text/css" href="style.css">
+     <script src="jquery-3.3.1.min.js"></script>
+     <script src="gridManipulator.js"></script>
+     <script src="websocket.js"></script>
+  </head>
+  <body>
+     <div id="loading">
+        <div id="loadingInner">
+           <div class="loader"></div>
+           <div class="loadingText">
+              <span id="infoMessage">Loading...</span>
+           </div>        
+        </div>
+       </div>
+     <div class="container">
+        <div id="box" class="box">
+           <div style="background-color:#a9daff">
+              <h3> MINI CROSSWORD by Last Puzzle Bender <select id="puzzleSelector" class="puzzleSelector" onChange="selectPuzzle(this);"> <option value="today">Today's Puzzle</option> </select> </h3>
+              <p id="date"></p>
+           </div>
+		   
+			<div class="puzzleWrapper">
+			   <h2>Ready to Solve</h2><br/>
+			   <div class="grid">
+				  <table>
+					 <tr>
+						<td>
+						   <div id="cell_1" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_2" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_3" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_4" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_5" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+					 </tr>
+					 <tr>
+						<td>
+						   <div id="cell_6" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_7" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_8" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_9" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_10" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+					 </tr>
+					 <tr>
+						<td>
+						   <div id="cell_11" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_12" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_13" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_14" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_15" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+					 </tr>
+					 <tr>
+						<td>
+						   <div id="cell_16" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_17" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_18" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_19" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_20" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+					 </tr>
+					 <tr>
+						<td>
+						   <div id="cell_21" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_22" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_23" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_24" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="cell_25" class="gridcell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+					 </tr>
+				  </table>
+			   </div>
+			</div>
+          
+           <div class="clues">
+          
+              <h2>ACROSS</h2>
+             
+              <table id="acrossTable">
+              </table>
+             
+              <h2>DOWN</h2>
+             
+              <table id="downTable">
+              </table>
+          
+           </div>
+			<div class="solutionWrapper">
+			   <h2>Solution of Puzzle</h2><br/>
+			   <div class="grid">
+				  <table>
+					 <tr>
+						<td>
+						   <div id="sol_cell_1" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_2" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_3" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_4" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_5" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+					 </tr>
+					 <tr>
+						<td>
+						   <div id="sol_cell_6" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_7" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_8" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_9" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_10" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+					 </tr>
+					 <tr>
+						<td>
+						   <div id="sol_cell_11" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_12" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_13" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_14" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_15" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+					 </tr>
+					 <tr>
+						<td>
+						   <div id="sol_cell_16" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_17" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_18" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_19" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_20" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+					 </tr>
+					 <tr>
+						<td>
+						   <div id="sol_cell_21" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_22" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_23" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_24" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+						<td>
+						   <div id="sol_cell_25" class="gridcell sol_cell">
+							  <div class="cornertext"></div>
+							  <div class="centertext"></div>
+							  <div class="circle"></div>
+						   </div>
+						</td>
+					 </tr>
+				  </table>
+			   </div>
+			</div>
+        </div>
+     </div>
+  </body>
+</html>
