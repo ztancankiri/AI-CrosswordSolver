@@ -1,2 +1,2 @@
 # AI-CrosswordSolver
-Crossword Puzzle Solver (CS 461 Artificial Intelligence Project)
+Crossword Puzzle Solver (CS 461 Artificial Intelligence Term Project)
