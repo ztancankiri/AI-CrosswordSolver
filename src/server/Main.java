@@ -43,5 +43,9 @@ public class Main {
                 wordLister.printWordList();
             }
         }*/
+
+/*        PyExecutor executor = new PyExecutor("python3", "antonyms.py");
+        String result = executor.exec("woman");
+        System.out.println(result);*/
     }
 }
