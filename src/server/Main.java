@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.openqa.selenium.firefox.FirefoxDriver;
 
@@ -32,20 +30,5 @@ public class Main {
         server.setTcpNoDelay(true);
         server.setConnectionLostTimeout(0);
         server.run();
-
-/*        GoogleSearcher searcher = new GoogleSearcher();
-        searcher.search("master of puppets");
-
-        for (String url : searcher.getSearchResults()) {
-            if (!url.contains("wikipedia")) {
-                WebsiteWordLister wordLister = new WebsiteWordLister(url);
-                wordLister.getWords();
-                wordLister.printWordList();
-            }
-        }*/
-
-/*        PyExecutor executor = new PyExecutor("python3", "antonyms.py");
-        String result = executor.exec("woman");
-        System.out.println(result);*/
     }
 }
