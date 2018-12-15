@@ -56,7 +56,7 @@ public class CrosswordPuzzleScraper {
     }
     
     public void initialize() {
-        DRIVER.get("https://www.nytimes.com/crosswords/game/mini" + (DEBUG ? "/2016/06/01" : ""));
+        DRIVER.get("https://www.nytimes.com/crosswords/game/mini" + (DEBUG ? "/2016/10/10" : ""));
 
         List<WebElement> button_list = DRIVER.findElements(By.tagName("button"));
         for (WebElement button : button_list) {

@@ -218,3 +218,10 @@ function getPuzzle() {
 	webSocket.send(requestJSON);
 	toggleLoading(true);
 }
+
+function solve(){
+	var optJSON = {"type":"solve"}
+	var requestJSON = JSON.stringify(optJSON);
+
+	webSocket.send(requestJSON);
+}
