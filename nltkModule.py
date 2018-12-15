@@ -3,6 +3,7 @@
 import socket
 import json
 from nltk.corpus import wordnet
+from textblob import TextBlob
 
 s = socket.socket()
 host = "localhost"
@@ -14,8 +15,8 @@ print("Server started...")
 isActive = True
 s.listen(1)
 while isActive:
-    client, addr = s.accept()
-    print("Got connection from " + str(addr))
+    client, address = s.accept()
+    print("Got connection from " + str(address))
     
     isConnected = True
     while isConnected:
@@ -71,6 +72,21 @@ while isActive:
     
             output = json.dumps(outputJSON) + "\n"
         
+            print(output)
+            client.send(output.encode())
+
+        elif cmd == "pluralize":
+            word = jsonObj['word']
+            plural = TextBlob(word).words[0].pluralize()
+
+            outputJSON = {
+                "cmd": "pluralizeResponse",
+                "word": word,
+                "result": plural
+            }
+
+            output = json.dumps(outputJSON) + "\n"
+
             print(output)
             client.send(output.encode())
 

@@ -1,10 +1,8 @@
 package server;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import java.io.IOException;
 
-public class Test implements MessageListener {
+public class Test  {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         /*        GoogleSearcher searcher = new GoogleSearcher();
@@ -18,7 +16,7 @@ public class Test implements MessageListener {
             }
         }*/
 
-        PyConnector connector = new PyConnector("localhost", 4444, new Test());
+        /*PyConnector connector = new PyConnector("localhost", 4444, new Test());
         connector.start();
 
         JSONObject json = new JSONObject();
@@ -26,17 +24,32 @@ public class Test implements MessageListener {
         json.put("word", "bad");
         connector.sendMessage(json.toString());
 
+        Thread.sleep(1000);
+
         json.put("cmd", "synonyms");
         json.put("word", "man");
         connector.sendMessage(json.toString());
 
+        Thread.sleep(1000);
+
+        json.put("cmd", "pluralize");
+        json.put("word", "man");
+        connector.sendMessage(json.toString());
+
+        Thread.sleep(400);
 
         Thread.sleep(5000);
         json.put("cmd", "closeModule");
-        connector.sendMessage(json.toString());
+        connector.sendMessage(json.toString());*/
+
+
+        PyExecutor executor = new PyExecutor("python3", "synonyms.py");
+        String result = executor.exec("man");
+        System.out.println(result);
+
     }
 
-    @Override
+   /* @Override
     public void onMessageReceived(String message) {
         JSONObject json = new JSONObject(message);
 
@@ -60,5 +73,11 @@ public class Test implements MessageListener {
 
             System.out.println();
         }
-    }
+        else if (json.getString("cmd").equals("pluralizeResponse")) {
+            System.out.println("Word: " + json.getString("word"));
+            System.out.println("Plural: " + json.getString("result"));
+
+            System.out.println();
+        }
+    }*/
 }

@@ -22,7 +22,7 @@ public class PyConnector extends Thread {
         super("PyConnectorThread");
 
         this.p = Runtime.getRuntime().exec("python3 nltkModule.py");
-        sleep(500);
+        sleep(2000);
         this.serverIP = serverIP;
         this.serverPort = serverPort;
         this.isActive = new AtomicBoolean(false);
