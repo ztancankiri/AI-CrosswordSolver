@@ -11,7 +11,7 @@ if len(sys.argv) > 0:
     for str in data:
         try:
             jsonDict = {"word": str,
-                        "singular": TextBlob(str).words[0].singularize()}
+                        "singular": TextBlob(str).words[0].singularize().upper()}
         except:
             pass
 

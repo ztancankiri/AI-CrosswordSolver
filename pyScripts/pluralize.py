@@ -23,7 +23,7 @@ if len(sys.argv) > 0:
         if not phraseplural(str):
             try:
                 jsonDict = {"word": str,
-                            "plural": TextBlob(str).words[0].pluralize()}
+                            "plural": TextBlob(str).words[0].pluralize().upper()}
             except:
                 pass
             jsonArray.append(jsonDict)
