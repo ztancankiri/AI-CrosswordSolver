@@ -11,10 +11,13 @@ public class Clue {
     public int score;
     public int type;
     public int no;
+    public int pos;
 
+    public int answerLength;
 
     public boolean isPlural;
-    public ArrayList<Word> words;
+    public ArrayList<Word> candidates;
+
     public PyExecutor executor;
 
     public Clue(String question, int score, int type, int no) {
@@ -22,15 +25,16 @@ public class Clue {
         this.score = score;
         this.type = type;
         this.no = no;
+        this.answerLength = 0;
+
         executor = new PyExecutor("python3", "isPlural.py");
-        try{
+        try {
             isPlural = Boolean.parseBoolean(executor.exec(question));
         }
         catch (Exception e){
             System.out.println(e.toString());
         }
     }
-
 
     public boolean isDown() {
         return type == DOWN;
@@ -42,7 +46,11 @@ public class Clue {
 
     public String toString(){
         String returnString = "";
-        returnString += (question + " " + score + " " + type + " " + no + " " + isPlural);
+        returnString += (question + " " + score + " " + type + " " + no + " " + isPlural + " " + answerLength + " " + pos);
         return returnString;
+    }
+
+    public void setAnswerLength(int answerLength) {
+        this.answerLength = answerLength;
     }
 }

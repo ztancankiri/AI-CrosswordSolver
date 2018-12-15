@@ -22,11 +22,11 @@ public class Server extends WebSocketServer {
 
     private final boolean DEBUG;
     Solver solver;
-    ArrayList<Clue> clues = new ArrayList<>();
     
     public Server(InetSocketAddress address, boolean debug) {
         super(address);
         this.DEBUG = debug;
+        this.solver = new Solver();
     }
     
     @Override
@@ -56,7 +56,9 @@ public class Server extends WebSocketServer {
                 
                 ArrayList<JSONObject> grid = new ArrayList<>();
                 ArrayList<Integer> blackCells = new ArrayList<>();
-                
+
+                solver.reset();
+
                 for (int i = 0; i < scraper.getTablesLength(); i++) {
                     for (int j = 0; j < scraper.getTablesLength(); j++) {
                         int pos = (i * 5) + j + 1;
@@ -69,23 +71,14 @@ public class Server extends WebSocketServer {
                         }
                         else {
                             blackCells.add(pos);
+                            solver.addBlackCellsToGrid(pos);
                         }
                     }
                 }
 
                 sendInfoMessage(conn, "Getting solutions.");
-                
-                ArrayList<JSONObject> questionPos = new ArrayList<>();
-                
-                for (int i : scraper.getQuestionIDSet()) {
-                    JSONObject obj = new JSONObject();
-                    obj.put("no", i);
-                    obj.put("pos", scraper.getQuestionPos(i) + 1);
-                    questionPos.add(obj);
-                }
-                sendInfoMessage(conn, "Getting question coordinates.");
-                ArrayList<JSONObject> acrossClues = new ArrayList<>();
 
+                ArrayList<JSONObject> acrossClues = new ArrayList<>();
 
                 sendInfoMessage(conn, "Getting across clues.");
                 for (int i : scraper.getQuestionSet("Across")) {
@@ -94,7 +87,7 @@ public class Server extends WebSocketServer {
                     obj.put("clue", scraper.getQuestion("Across", i));
                     acrossClues.add(obj);
                     Clue clue = new Clue(scraper.getQuestion("Across", i), 0, Clue.ACROSS, i);
-                    clues.add(clue);
+                    solver.addClue(clue);
                 }
                 
                 ArrayList<JSONObject> downClues = new ArrayList<>();
@@ -103,12 +96,23 @@ public class Server extends WebSocketServer {
                     JSONObject obj = new JSONObject();
                     obj.put("no", i);
                     obj.put("clue", scraper.getQuestion("Down", i));
-                    Clue clue = new Clue(scraper.getQuestion("Down", i), 0, Clue.DOWN, i);
-                    clues.add(clue);
                     downClues.add(obj);
+                    Clue clue = new Clue(scraper.getQuestion("Down", i), 0, Clue.DOWN, i);
+                    solver.addClue(clue);
                 }
                 sendInfoMessage(conn, "Getting down clues.");
-                
+
+                ArrayList<JSONObject> questionPos = new ArrayList<>();
+
+                for (int i : scraper.getQuestionIDSet()) {
+                    JSONObject obj = new JSONObject();
+                    obj.put("no", i);
+                    obj.put("pos", scraper.getQuestionPos(i) + 1);
+                    questionPos.add(obj);
+                    solver.addQPos(i, scraper.getQuestionPos(i) + 1);
+                }
+                sendInfoMessage(conn, "Getting question coordinates.");
+
                 ArrayList<Integer> circles = new ArrayList<>();
                 
                 for (int i = 0; i < scraper.getTablesLength(); i++) {
@@ -170,6 +174,13 @@ public class Server extends WebSocketServer {
             System.out.println(responseObject.toString());
             conn.send(responseObject.toString());
         }
+        else if(msgObject.getString("type").equals("solve")){
+            solver.solve();
+        }
+
+
+
+
         else if (msgObject.getString("type").equals("test")) {
             JSONObject responseObject = new JSONObject();
             responseObject.put("type", "testResponse");
@@ -177,12 +188,6 @@ public class Server extends WebSocketServer {
 
             System.out.println(responseObject.toString());
             conn.send(responseObject.toString());
-        }
-
-        else if(msgObject.getString("type").equals("solve")){
-            System.out.println("Solving..." + clues.size());
-            solver = new Solver(clues);
-            System.out.println(solver.toString());
         }
     }
 

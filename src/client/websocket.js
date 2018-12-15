@@ -219,7 +219,7 @@ function getPuzzle() {
 	toggleLoading(true);
 }
 
-function solve(){
+function solve() {
 	var optJSON = {"type":"solve"}
 	var requestJSON = JSON.stringify(optJSON);
 

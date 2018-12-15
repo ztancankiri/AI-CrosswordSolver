@@ -10,14 +10,12 @@ import java.util.ArrayList;
 
 public class GoogleSearcher {
 
-    private static final String SEARCH_URL = "https://www.google.com/search?hl=en&q=";
+    private static final String SEARCH_URL = "https://www.google.com/search?hl=en&num=50&q=";
 
     private static final String[] FORBIDDEN_URL_PARTS = {
             "webcache.googleusercontent",
             "translate.google.com",
             "youtube.com",
-            "/search?hl=en&q=",
-            "/search?q=",
             "/preferences",
             "/setprefs?safeui",
             "/advanced_search?q=",
@@ -65,7 +63,20 @@ public class GoogleSearcher {
     };
 
     private static final String[] FORBIDDEN_PREFIXES = {
-            "/search?hl=en&"
+            "/search?hl=en&",
+            "/url?url=",
+            "javascript:",
+            "/search?"
+    };
+
+    private static final String[] FORBIDDEN_POSTFIXES = {
+            ".pdf",
+            ".doc",
+            ".docx",
+            ".ppt",
+            ".xls",
+            ".pptx",
+            ".xlsx"
     };
 
     private String searchText;
@@ -129,6 +140,14 @@ public class GoogleSearcher {
             if (url.startsWith(FORBIDDEN_PREFIXES[i]))
                 return true;
         }
+
+        for (int i = 0; i < FORBIDDEN_POSTFIXES.length; i++) {
+            if (url.endsWith(FORBIDDEN_POSTFIXES[i]))
+                return true;
+        }
+
+        if (!url.startsWith("http"))
+            return true;
 
         return false;
     }
