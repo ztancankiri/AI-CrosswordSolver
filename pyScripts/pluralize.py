@@ -20,7 +20,7 @@ if len(sys.argv) > 0:
     data = ast.literal_eval(dataStr)
     jsonArray = []
     for str in data:
-        if not phraseplural(str):
+        if phraseplural(str) == True:
             try:
                 jsonDict = {"word": str,
                             "plural": TextBlob(str).words[0].pluralize().upper()}
