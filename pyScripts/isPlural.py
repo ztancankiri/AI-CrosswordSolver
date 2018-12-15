@@ -56,4 +56,7 @@ if len(sys.argv) > 0:
     if subject is "" or verb is "":
         phraseplural()
     else:
-        subjectplural()
+        try:
+            subjectplural()
+        except:
+            print("false")
