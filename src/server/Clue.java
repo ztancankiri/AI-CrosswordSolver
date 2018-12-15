@@ -31,6 +31,7 @@ public class Clue {
         }
     }
 
+
     public boolean isDown() {
         return type == DOWN;
     }
