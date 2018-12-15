@@ -32,7 +32,10 @@ public class GoogleSearcher {
             "https://www.google.com/webhp?",
             "https://maps.google.com/maps?",
             "https://support.google.com/websearch?p=ws_settings_location",
-            "https://www.google.com/intl"
+            "https://www.google.com/intl",
+            "google.com.tr/shopping?",
+            "jamboard.google.com",
+            "wordplays.com"
     };
 
     private static final String[] FORBIDDEN_URLS = {
@@ -59,6 +62,10 @@ public class GoogleSearcher {
             "https://contacts.google.com/?hl=en&tab=wC",
             "https://maps.google.com.tr/maps?hl=en&tab=wl",
             "https://www.google.com.tr/webhp?tab=ww"
+    };
+
+    private static final String[] FORBIDDEN_PREFIXES = {
+            "/search?hl=en&"
     };
 
     private String searchText;
@@ -115,6 +122,11 @@ public class GoogleSearcher {
 
         for (int i = 0; i < FORBIDDEN_URLS.length; i++) {
             if (url.equals(FORBIDDEN_URLS[i]))
+                return true;
+        }
+
+        for (int i = 0; i < FORBIDDEN_PREFIXES.length; i++) {
+            if (url.startsWith(FORBIDDEN_PREFIXES[i]))
                 return true;
         }
 
