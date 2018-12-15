@@ -3,8 +3,9 @@ from textblob import TextBlob
 import ast
 
 if len(sys.argv) > 0:
-
-    data = ast.literal_eval(sys.argv[1])
+    jsonFile = open(sys.argv[1],"r")
+    dataStr = jsonFile.read()
+    data = ast.literal_eval(dataStr)
     jsonArray = []
     for str in data:
         jsonDict = {"word": str,

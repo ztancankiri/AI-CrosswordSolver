@@ -1,7 +1,6 @@
 import sys
 from textblob import TextBlob
 import ast
-import subprocess
 from nltk import WordNetLemmatizer
 
 
@@ -17,7 +16,9 @@ def phraseplural(string):
 
 
 if len(sys.argv) > 0:
-    data = ast.literal_eval(sys.argv[1])
+    jsonFile = open(sys.argv[1],"r")
+    dataStr = jsonFile.read()
+    data = ast.literal_eval(dataStr)
     jsonArray = []
     for str in data:
         if not phraseplural(str):
