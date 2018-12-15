@@ -1,21 +1,24 @@
 import sys
 from nltk.corpus import wordnet
-import json
+import ast
 
-if len(sys.argv) == 2:
-    word = sys.argv[1]
+if len(sys.argv) > 0:
     antonyms = []
+    data = ast.literal_eval(sys.argv[1])
+    jsonArray = []
 
-    for syn in wordnet.synsets(word):
-        for l in syn.lemmas():
-            if l.antonyms():
-                antonyms.append(l.antonyms()[0].name())
+    for str in data:
 
-    jsonDict = {"word": sys.argv[1], "antonyms": []}
+        for syn in wordnet.synsets(str):
+            for l in syn.lemmas():
+                if l.antonyms():
+                    antonyms.append(l.antonyms()[0].name())
+        jsonDict = {"word": str, "antonyms": []}
 
 
-    for antonym in antonyms:
-        jsonDict["antonyms"].append(antonym)
+        for antonym in antonyms:
+            jsonDict["antonyms"].append(antonym)
+        jsonArray.append(jsonDict)
+        antonyms = []
 
-    jsonDump = json.dumps(jsonDict)
-    print(jsonDump)
+    print(jsonArray)

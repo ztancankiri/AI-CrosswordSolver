@@ -1,14 +1,14 @@
 import sys
-import json
 from textblob import TextBlob
+import ast
 
-if len(sys.argv) == 2:
+if len(sys.argv) > 0:
 
-    word = sys.argv[1]
-    singular = TextBlob(word).words[0].singularize()
+    data = ast.literal_eval(sys.argv[1])
+    jsonArray = []
+    for str in data:
+        jsonDict = {"word": str,
+                    "singular": TextBlob(str).words[0].singularize()}
+        jsonArray.append(jsonDict)
 
-    jsonDict = {"word": word,
-                "singular": singular}
-
-    jsonDump = json.dumps(jsonDict)
-    print(jsonDump)
+    print(jsonArray)
