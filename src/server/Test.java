@@ -1,83 +1,77 @@
 package server;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Test  {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        /*        GoogleSearcher searcher = new GoogleSearcher();
-        searcher.search("master of puppets");
+/*        GoogleSearcher searcher = new GoogleSearcher();
+        searcher.search("Hard-to-find guy in a crowd");
+
+        ArrayList<Word> candidateList = new ArrayList<>();
 
         for (String url : searcher.getSearchResults()) {
             if (!url.contains("wikipedia")) {
                 WebsiteWordLister wordLister = new WebsiteWordLister(url);
                 wordLister.getWords();
-                wordLister.printWordList();
+                candidateList.addAll(wordLister.getWordList());
             }
+        }
+
+        System.out.println();
+        System.out.println("Total Word Count: " + candidateList.size());
+
+        CandidateFilter filter = new CandidateFilter(candidateList);
+        ArrayList<Word> words_2 = filter.filterByLength(2);
+        ArrayList<Word> words_3 = filter.filterByLength(3);
+        ArrayList<Word> words_4 = filter.filterByLength(4);
+        ArrayList<Word> words_5 = filter.filterByLength(5);
+
+ *//*       CandidateFilter filter2 = new CandidateFilter(candidateList);
+        ArrayList<Word> charFiltered = filter2.filterByChar(new CF('C',0), new CF('E',2));*//*
+
+        ArrayList<Word> merged = new ArrayList<>();
+        merged.addAll(words_2);
+        merged.addAll(words_3);
+        merged.addAll(words_4);
+        merged.addAll(words_5);
+
+        CandidateFilter stowordRemover = new CandidateFilter(words_5);
+
+        ArrayList<Word> noStopword = stowordRemover.removeStopwords();
+
+        CandidateFilter cleaner = new CandidateFilter(noStopword);
+        ArrayList<Word> cleaned = cleaner.cleanReplicates();
+
+        for (int i = 0; i < cleaned.size(); i++) {
+            Word w = cleaned.get(i);
+            System.out.println(i + " - " + w.word + " (" + w.freq + ") -> " + w.source);
         }*/
+/*
+        PyExecutor executor = new PyExecutor("python3", "antonyms.py");
+        String result = executor.exec("energy");
+        System.out.println(result);*/
 
-        /*PyConnector connector = new PyConnector("localhost", 4444, new Test());
-        connector.start();
+        ThesaurusScraper thesaurusScraper = new ThesaurusScraper("bad");
+        thesaurusScraper.get();
+        ArrayList<String> list_s = thesaurusScraper.getSynonyms();
+        ArrayList<String> list_a = thesaurusScraper.getAntonyms();
 
-        JSONObject json = new JSONObject();
-        json.put("cmd", "antonyms");
-        json.put("word", "bad");
-        connector.sendMessage(json.toString());
+        System.out.println("Synonyms:");
 
-        Thread.sleep(1000);
+        for (String syn : list_s) {
+            System.out.println(syn);
+        }
 
-        json.put("cmd", "synonyms");
-        json.put("word", "man");
-        connector.sendMessage(json.toString());
+        System.out.println();
+        System.out.println("Antonyms:");
 
-        Thread.sleep(1000);
-
-        json.put("cmd", "pluralize");
-        json.put("word", "man");
-        connector.sendMessage(json.toString());
-
-        Thread.sleep(400);
-
-        Thread.sleep(5000);
-        json.put("cmd", "closeModule");
-        connector.sendMessage(json.toString());*/
-
-
-        PyExecutor executor = new PyExecutor("python3", "synonyms.py");
-        String result = executor.exec("man");
-        System.out.println(result);
+        for (String ant : list_a) {
+            System.out.println(ant);
+        }
 
     }
-
-   /* @Override
-    public void onMessageReceived(String message) {
-        JSONObject json = new JSONObject(message);
-
-        if (json.getString("cmd").equals("synonymsResponse")) {
-            System.out.println("Word: " + json.getString("word"));
-            JSONArray results = json.getJSONArray("results");
-
-            for (Object result : results) {
-                System.out.println((String) result);
-            }
-
-            System.out.println();
-        }
-        else if (json.getString("cmd").equals("antonymsResponse")) {
-            System.out.println("Word: " + json.getString("word"));
-            JSONArray results = json.getJSONArray("results");
-
-            for (Object result : results) {
-                System.out.println((String) result);
-            }
-
-            System.out.println();
-        }
-        else if (json.getString("cmd").equals("pluralizeResponse")) {
-            System.out.println("Word: " + json.getString("word"));
-            System.out.println("Plural: " + json.getString("result"));
-
-            System.out.println();
-        }
-    }*/
 }

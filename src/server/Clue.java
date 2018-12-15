@@ -1,6 +1,6 @@
 package server;
 
-public class Question {
+public class Clue {
 
     public static final int DOWN = 0;
     public static final int ACROSS = 1;
@@ -9,7 +9,7 @@ public class Question {
     public int score;
     public int type;
 
-    public Question(String question, int score, int type) {
+    public Clue(String question, int score, int type) {
         this.question = question;
         this.score = score;
         this.type = type;
