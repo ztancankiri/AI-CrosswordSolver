@@ -1,6 +1,7 @@
 import sys
 from textblob import TextBlob
 import ast
+import json
 
 if len(sys.argv) > 0:
     jsonFile = open(sys.argv[1],"r")
@@ -16,5 +17,7 @@ if len(sys.argv) > 0:
 
         jsonArray.append(jsonDict)
 
-    print(jsonArray)
+    outFile = open("outJSON.txt", "w")
+    json.dump(jsonArray, outFile)
     jsonFile.close()
+    outFile.close()

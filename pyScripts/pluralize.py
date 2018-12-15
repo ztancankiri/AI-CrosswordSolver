@@ -2,8 +2,7 @@ import sys
 from textblob import TextBlob
 import ast
 from nltk import WordNetLemmatizer
-
-
+import json
 
 def phraseplural(string):
     wnl = WordNetLemmatizer()
@@ -33,5 +32,7 @@ if len(sys.argv) > 0:
                         "plural": str}
             jsonArray.append(jsonDict)
 
-    print(jsonArray)
+    outFile = open("outJSON.txt", "w")
+    json.dump(jsonArray, outFile)
     jsonFile.close()
+    outFile.close()
