@@ -31,3 +31,4 @@ if len(sys.argv) > 0:
             jsonArray.append(jsonDict)
 
     print(jsonArray)
+    jsonFile.close()
