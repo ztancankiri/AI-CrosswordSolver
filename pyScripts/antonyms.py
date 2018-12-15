@@ -1,5 +1,6 @@
 import sys
 from nltk.corpus import wordnet
+import json
 
 if len(sys.argv) == 2:
     word = sys.argv[1]
@@ -10,15 +11,11 @@ if len(sys.argv) == 2:
             if l.antonyms():
                 antonyms.append(l.antonyms()[0].name())
 
-    antonyms = set(antonyms)
-    antonyms = list(antonyms)
+    jsonDict = {"word": sys.argv[1], "antonyms": []}
 
-    outputA = ""
 
     for antonym in antonyms:
-        if antonym != antonyms[-1]:
-            outputA += antonym.replace("_", " ") + ","
-        else:
-            outputA += antonym.replace("_", " ")
+        jsonDict["antonyms"].append(antonym)
 
-    print(outputA)
+    jsonDump = json.dumps(jsonDict)
+    print(jsonDump)

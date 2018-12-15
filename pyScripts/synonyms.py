@@ -1,5 +1,6 @@
 import sys
 from nltk.corpus import wordnet
+import json
 
 if len(sys.argv) == 2:
     word = sys.argv[1]
@@ -9,15 +10,11 @@ if len(sys.argv) == 2:
         for l in syn.lemmas():
             synonyms.append(l.name())
 
-    synonyms = set(synonyms)
-    synonyms = list(synonyms)
+    jsonDict = {"word": sys.argv[1], "synonyms": []}
 
-    outputS = ""
 
     for synonym in synonyms:
-        if synonym != synonyms[-1]:
-            outputS += synonym.replace("_", " ") + ","
-        else:
-            outputS += synonym.replace("_", " ")
+        jsonDict["synonyms"].append(synonym)
 
-    print(outputS)
+    jsonDump = json.dumps(jsonDict)
+    print(jsonDump)
