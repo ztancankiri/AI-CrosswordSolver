@@ -2,8 +2,12 @@ package server;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 public class Test  {
@@ -96,7 +100,27 @@ public class Test  {
             System.out.println(word + " -> " + plural);
         }*/
 
-        PyExecutor e = new PyExecutor("python3", "test.py");
-        System.out.println(e.exec(""));
+        /*PyExecutor e = new PyExecutor("python3", "test.py");
+        System.out.println(e.exec(""));*/
+
+        /*String clueText = "San Diego ballplayer";
+
+        String url = clueText.replace(" ", "-").toLowerCase();
+        url = "http://crosswordtracker.com/clue/" + url;
+        Document document = Jsoup.connect(url).get();
+        Element node = document.getElementsByClass("answer highlighted").first();
+        String text = node.text();
+        System.out.println(text);*/
+
+
+        long counter = 0;
+        for (int i = 0; i < 10000; i++) {
+            for (int j = 0; j < 10000; j++) {
+                for (int k = 0; k < 100; k++) {
+                    counter++;
+                    System.out.println(counter);
+                }
+            }
+        }
     }
 }

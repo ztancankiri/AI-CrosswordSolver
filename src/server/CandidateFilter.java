@@ -132,7 +132,7 @@ public class CandidateFilter {
         ArrayList<Word> result = new ArrayList<>();
 
         try {
-            String url = clueText.replace(" ", "-");
+            String url = clueText.replace(" ", "-").toLowerCase();
             url = "http://crosswordtracker.com/clue/" + url;
             Document document = Jsoup.connect(url).get();
             Element node = document.getElementsByClass("answer highlighted").first();
@@ -147,8 +147,10 @@ public class CandidateFilter {
 
             int index = listContains(result, text);
             if (index != -1) {
-                if (index > n)
+                if (index > n) {
                     result.get(index).freq = prevFreq + 54;
+                    result.get(index).source = "CT";
+                }
             }
             else {
                 Word word = new Word(text, "CT");

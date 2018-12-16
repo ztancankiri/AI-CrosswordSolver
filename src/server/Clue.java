@@ -1,5 +1,6 @@
 package server;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Clue {
@@ -13,6 +14,9 @@ public class Clue {
     public int no;
     public int pos;
 
+    public double avg;
+    public double std;
+
     public int answerLength;
 
     public boolean isPlural;
@@ -20,12 +24,16 @@ public class Clue {
 
     public PyExecutor executor;
 
+
+    public ArrayList<Integer> editedAfter;
+
     public Clue(String question, int score, int type, int no) {
         this.question = question;
         this.score = score;
         this.type = type;
         this.no = no;
         this.answerLength = 0;
+        this.editedAfter = new ArrayList<>();
 
         executor = new PyExecutor("python3", "isPlural.py");
         try {

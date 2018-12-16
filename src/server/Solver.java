@@ -12,7 +12,7 @@ public class Solver {
 
     private ArrayList<Clue> clues;
 
-    private char[][] grid;
+    private String[][] grid;
 
     private PyExecutor antonymEx;
     private PyExecutor pluralizeEx;
@@ -21,7 +21,11 @@ public class Solver {
 
     public Solver() {
         this.clues = new ArrayList<>();
-        this.grid = new char[5][5];
+        this.grid = new String[5][5];
+
+        for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 5; j++)
+                grid[i][j] = "0";
 
         this.antonymEx = new PyExecutor("python3", "antonyms.py");
         this.synonymEx = new PyExecutor("python3", "synonyms.py");
@@ -138,7 +142,12 @@ public class Solver {
 
             System.out.println();
             System.out.println("Candidate Lists are populated.");
+
+
+            System.out.println();
+            System.out.println("Puzzle solving...");
         }
+        solvePuzzle();
     }
 
     public void addClue(Clue clue) {
@@ -157,7 +166,7 @@ public class Solver {
         int col = (pos - 1) % 5;
         int row = (pos - 1) / 5;
 
-        grid[row][col] = '#';
+        grid[row][col] = "#";
     }
 
     public void calculateClueLength() {
@@ -169,7 +178,7 @@ public class Solver {
                 int row = (clues.get(i).pos - 1) / 5;
 
                 for (int j = col; j < 5; j++) {
-                    if (grid[row][j] != '#')
+                    if (!grid[row][j].equals("#"))
                         counter++;
                     else
                         j = 5; // break
@@ -180,7 +189,7 @@ public class Solver {
                 int row = (clues.get(i).pos - 1) / 5;
 
                 for (int j = row; j < 5; j++) {
-                    if (grid[j][col] != '#')
+                    if (!grid[j][col].equals("#"))
                         counter++;
                     else
                         j = 5; // break
@@ -190,17 +199,236 @@ public class Solver {
         }
     }
 
-    public String toString(){
-        String str = "";
-        for(Clue clue: clues){
-            str += clue.toString() + "\n";
-        }
-        return str;
-    }
-
     public void reset() {
         this.clues = new ArrayList<>();
-        this.grid = new char[5][5];
+        this.grid = new String[5][5];
 
+        for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 5; j++)
+                grid[i][j] = "0";
+    }
+
+    ArrayList<Clue> testCase;
+
+    public void solvePuzzle() {
+        calculateAVGandSTD();
+
+        testCase = new ArrayList<>();
+
+        for (Clue clue : clues)
+            testCase.add(clue);
+
+        for (Clue clue : testCase) {
+            ArrayList<Word> temp = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                temp.add(clue.candidates.get(i));
+            }
+            clue.candidates = temp;
+        }
+
+        System.out.println("going to recursion...");
+        recursion(testCase);
+
+        printGrid();
+    }
+
+    private void printGrid() {
+        System.out.println();
+        System.out.println("---GRID---");
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++)
+                System.out.print(grid[i][j] + "\t");
+
+            System.out.println();
+        }
+    }
+
+    private void recursion(ArrayList<Clue> possibleClues) {
+        printGrid();
+        Clue maxClue = findMaxClue(possibleClues);
+        putClueToGrid(maxClue);
+    }
+
+    private void calculateAVGandSTD() {
+        int sum;
+        for(Clue clue : clues){
+            sum = 0;
+            for(int i = 0; i < 100; i++){
+                sum += clue.candidates.get(i).freq;
+            }
+            clue.avg = sum / 100;
+            for(int i = 0; i < 100; i++){
+                clue.std = clue.std + Math.pow(clue.candidates.get(i).freq - clue.avg, 2);
+            }
+        }
+    }
+
+    private Clue findMaxClue(ArrayList<Clue> possibleClues) {
+        /*Clue maxClue = possibleClues.get(0);
+
+        for(Clue clue : possibleClues){
+            if(clue.std > maxClue.std)
+                maxClue = clue;
+        }
+
+        return maxClue;*/
+
+        return possibleClues.get(0);
+    }
+
+    private void putClueToGrid(Clue clue) {
+        int col = (clue.pos - 1) % 5;
+        int row = (clue.pos - 1) / 5;
+
+        printGrid();
+        for (int index = 0; index < 10; index++) {
+            printGrid();
+            if (clue.type == Clue.ACROSS) {
+                for (int i = 0; i < clue.answerLength; i++) {
+                    printGrid();
+                    if (grid[row][col + i].equals("0")) {
+                        grid[row][col + i] = "" + clue.candidates.get(index).word.charAt(i);
+
+                        int y = row;
+                        int x = col + 1;
+
+                        int idx = (y * 5) + x + 1;
+                        clue.editedAfter.add(idx);
+
+                        if (i == clue.answerLength - 1) {
+                            ArrayList<Clue> nexts = findClues(clue);
+                            if (!nexts.isEmpty())
+                                recursion(nexts);
+                        }
+                    }
+                    else if (grid[row][col + i] == "" + clue.candidates.get(index).word.charAt(i)) {
+                        grid[row][col + i] = "" + clue.candidates.get(index).word.charAt(i);
+
+                        if (i == clue.answerLength - 1) {
+                            ArrayList<Clue> nexts = findClues(clue);
+                            if (!nexts.isEmpty())
+                                recursion(nexts);
+                        }
+                    }
+                    else {
+                        for (int idx : clue.editedAfter) {
+                            int drow = (idx - 1) / 5;
+                            int dcol = (idx - 1) % 5;
+
+                            grid[drow][dcol] = "0";
+                        }
+                        clue.editedAfter = new ArrayList<>();
+
+                        if (i == clue.answerLength - 1) {
+                            recursion(testCase);
+                        }
+                    }
+                }
+            }
+            else if (clue.type == Clue.DOWN) {
+                printGrid();
+                for (int i = 0; i < clue.answerLength; i++) {
+                    printGrid();
+                    if (grid[row][col + i].equals("0")) {
+                        grid[row + i][col] = "" + clue.candidates.get(index).word.charAt(i);
+
+                        int y = row;
+                        int x = col + 1;
+
+                        int idx = (y * 5) + x + 1;
+                        clue.editedAfter.add(idx);
+
+                        if (i == clue.answerLength - 1) {
+                            ArrayList<Clue> nexts = findClues(clue);
+                            if (!nexts.isEmpty())
+                                recursion(nexts);
+                        }
+                    }
+                    else if (grid[row + i][col]  == "" + clue.candidates.get(index).word.charAt(i)) {
+                        grid[row + i][col] = "" + clue.candidates.get(index).word.charAt(i);
+
+                        if (i == clue.answerLength - 1) {
+                            ArrayList<Clue> nexts = findClues(clue);
+                            if (!nexts.isEmpty())
+                                recursion(nexts);
+                        }
+                    }
+                    else {
+                        for (int idx : clue.editedAfter) {
+                            int drow = (idx - 1) / 5;
+                            int dcol = (idx - 1) % 5;
+
+                            grid[drow][dcol] = "0";
+                        }
+                        clue.editedAfter = new ArrayList<>();
+
+                        if (i == clue.answerLength - 1) {
+                            recursion(testCase);
+                        }
+                    }
+                }
+            }
+
+           /* ArrayList<Clue> nexts = findClues(clue);
+            if (!nexts.isEmpty())
+                recursion(nexts);
+            else {
+                clue
+
+            }
+*/
+        }
+    }
+
+    private boolean isGridFull() {
+        boolean check = true;
+        for (int  i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (grid[i][j].equals("0"))
+                    check = false;
+            }
+        }
+        return check;
+    }
+
+    private ArrayList<Clue> findClues(Clue clue) {
+        ArrayList<Clue> result = new ArrayList<>();
+
+        int col = (clue.pos - 1) % 5;
+        int row = (clue.pos - 1) / 5;
+
+        if (clue.type == Clue.ACROSS) {
+            int start1 = col;
+            int end1 = start1 + clue.answerLength - 1;
+
+            for (int i = 0; i < clues.size(); i++) {
+                int colp = (clues.get(i).pos - 1) % 5;
+                int rowp = (clues.get(i).pos - 1) / 5;
+
+                int start2 = rowp;
+                int end2 = start2 + clues.get(i).answerLength - 1;
+
+                if ((start1 <= colp && colp <= end1) && (start2 <= row && row <= end2))
+                    result.add(clues.get(i));
+            }
+        }
+        else if (clue.type == Clue.DOWN) {
+            int start1 = row;
+            int end1 = start1 + clue.answerLength - 1;
+
+            for (int i = 0; i < clues.size(); i++) {
+                int colp = (clues.get(i).pos - 1) % 5;
+                int rowp = (clues.get(i).pos - 1) / 5;
+
+                int start2 = colp;
+                int end2 = start2 + clues.get(i).answerLength - 1;
+
+                if ((start1 <= rowp && rowp <= end1) && (start2 <= col && col <= end2))
+                    result.add(clues.get(i));
+            }
+        }
+
+        result.remove(clue);
+        return result;
     }
 }
