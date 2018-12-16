@@ -13,6 +13,8 @@ public class Clue {
     public int type;
     public int no;
     public int pos;
+    public double scoreAverage;
+    public double scoreSTD;
 
     public double avg;
     public double std;

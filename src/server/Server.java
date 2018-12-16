@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -22,6 +23,8 @@ public class Server extends WebSocketServer {
 
     private final boolean DEBUG;
     Solver solver;
+
+    JSONObject solveJSON;
     
     public Server(InetSocketAddress address, boolean debug) {
         super(address);
@@ -57,7 +60,6 @@ public class Server extends WebSocketServer {
                 ArrayList<JSONObject> grid = new ArrayList<>();
                 ArrayList<Integer> blackCells = new ArrayList<>();
 
-                solver.reset();
 
                 for (int i = 0; i < scraper.getTablesLength(); i++) {
                     for (int j = 0; j < scraper.getTablesLength(); j++) {
@@ -69,11 +71,11 @@ public class Server extends WebSocketServer {
                             obj.put("char", scraper.getFullTable()[i][j]);
                             grid.add(obj);
 
-                            solver.finishedGrid[i][j] = scraper.getFullTable()[i][j];
+                            //solver.finishedGrid[i][j] = scraper.getFullTable()[i][j];
                         }
                         else {
                             blackCells.add(pos);
-                            solver.addBlackCellsToGrid(pos);
+                            //solver.addBlackCellsToGrid(pos);
                         }
                     }
                 }
@@ -91,7 +93,7 @@ public class Server extends WebSocketServer {
                     obj.put("clue", scraper.getQuestion("Across", i));
                     acrossClues.add(obj);
                     Clue clue = new Clue(scraper.getQuestion("Across", i), 0, Clue.ACROSS, i);
-                    solver.addClue(clue);
+                    //solver.addClue(clue);
                 }
                 
                 ArrayList<JSONObject> downClues = new ArrayList<>();
@@ -102,7 +104,7 @@ public class Server extends WebSocketServer {
                     obj.put("clue", scraper.getQuestion("Down", i));
                     downClues.add(obj);
                     Clue clue = new Clue(scraper.getQuestion("Down", i), 0, Clue.DOWN, i);
-                    solver.addClue(clue);
+                    //solver.addClue(clue);
                 }
                 sendInfoMessage(conn, "Getting down clues.");
 
@@ -113,7 +115,7 @@ public class Server extends WebSocketServer {
                     obj.put("no", i);
                     obj.put("pos", scraper.getQuestionPos(i) + 1);
                     questionPos.add(obj);
-                    solver.addQPos(i, scraper.getQuestionPos(i) + 1);
+                    //solver.addQPos(i, scraper.getQuestionPos(i) + 1);
                 }
                 sendInfoMessage(conn, "Getting question coordinates.");
 
@@ -129,18 +131,17 @@ public class Server extends WebSocketServer {
                 }
                 sendInfoMessage(conn, "Checking for and getting circles on puzzle.");
 
-                JSONObject responseObject = new JSONObject();
-                responseObject.put("type", "puzzle");
-                responseObject.put("grid", grid.toArray());
-                responseObject.put("questionPos", questionPos.toArray());
-                responseObject.put("acrossClues", acrossClues.toArray());
-                responseObject.put("downClues", downClues.toArray());
-                responseObject.put("circles", circles.toArray());
-                responseObject.put("blackCells", blackCells.toArray());
+                solveJSON = new JSONObject();
+                solveJSON.put("type", "puzzle");
+                solveJSON.put("grid", grid.toArray());
+                solveJSON.put("questionPos", questionPos.toArray());
+                solveJSON.put("acrossClues", acrossClues.toArray());
+                solveJSON.put("downClues", downClues.toArray());
+                solveJSON.put("circles", circles.toArray());
+                solveJSON.put("blackCells", blackCells.toArray());
 
-                System.out.println(responseObject.toString());
-                conn.send(responseObject.toString());
-                
+                System.out.println(solveJSON.toString());
+                conn.send(solveJSON.toString());
                 scraper.quit();
             }
             catch (NotYetConnectedException e) {
@@ -162,11 +163,11 @@ public class Server extends WebSocketServer {
         }
         else if (msgObject.getString("type").equals("getPuzzleFromArchive")) {
             String puzzleDate = msgObject.getString("date");
-            JSONObject responseObject = new JSONObject(readFileAsString("puzzleArchive/" + puzzleDate + ".json"));
-            responseObject.put("type", "puzzleFromArchive");
+            solveJSON = new JSONObject(readFileAsString("puzzleArchive/" + puzzleDate + ".json"));
+            solveJSON.put("type", "puzzleFromArchive");
 
-            System.out.println(responseObject.toString());
-            conn.send(responseObject.toString());
+            System.out.println(solveJSON.toString());
+            conn.send(solveJSON.toString());
 
             sendInfoMessage(conn, "Getting puzzle from archive. (" + puzzleDate + ")");
         }
@@ -179,6 +180,7 @@ public class Server extends WebSocketServer {
             conn.send(responseObject.toString());
         }
         else if(msgObject.getString("type").equals("solve")){
+            initializeClues(solveJSON);
             solver.solve();
         }
 
@@ -234,4 +236,59 @@ public class Server extends WebSocketServer {
 
         return result;
     }
+
+    private void initializeClues(JSONObject object){
+        solver = new Solver();
+        System.out.println("down clue");
+        JSONObject[] downClues = (JSONObject[]) object.get("downClues");
+        System.out.println("across");
+        JSONArray acrossClues = (JSONArray) object.get("acrossClues");
+        System.out.println("black");
+        int[] blackCells = (int[]) object.get("blackCells");
+        System.out.println("question");
+        JSONArray qPosArray = (JSONArray) object.get("questionPos");
+        System.out.println("grid");
+        JSONArray grid = (JSONArray) object.get("grid");
+
+        for(Object o : downClues){
+            int no = (int) ((JSONObject) o).get("no");
+            String question = (String) ((JSONObject) o).get("clue");
+            Clue clue = new Clue(question, 0, Clue.DOWN, no);
+            solver.addClue(clue);
+        }
+
+        for(Object o : acrossClues){
+            int no = (int) ((JSONObject) o).get("no");
+            String question = (String) ((JSONObject) o).get("clue");
+            Clue clue = new Clue(question, 0, Clue.ACROSS, no);
+            solver.addClue(clue);
+        }
+
+        String[][] fullGrid = new String[5][5];
+
+        for(int i : blackCells){
+            int col = (i - 1) % 5;
+            int row = (i - 1) / 5;
+            solver.addBlackCellsToGrid(i);
+            fullGrid[row][col] = "#";
+        }
+
+        for(Object o : qPosArray){
+            int no = (int) ((JSONObject) o).get("no");
+            int pos = (int) ((JSONObject) o).get("pos");
+            solver.addQPos(no, pos);
+        }
+
+        for(Object o : grid){
+            int pos = (int) ((JSONObject) o).get("pos");
+            String s = (String) ((JSONObject) o).get("char");
+            int col = (pos - 1) % 5;
+            int row = (pos - 1) / 5;
+            fullGrid[row][col] = s;
+        }
+
+        solver.finishedGrid = fullGrid;
+
+    }
+
 }
