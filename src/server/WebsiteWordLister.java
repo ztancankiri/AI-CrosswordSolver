@@ -29,7 +29,7 @@ public class WebsiteWordLister {
                 wordList.add(new Word(element.toUpperCase(), searchURL));
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("» Exception: " + e.getMessage());
         }
     }
 

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class GoogleSearcher {
 
-    private static final String SEARCH_URL = "https://www.google.com/search?hl=en&num=50&q=";
+    private static final String SEARCH_URL = "https://www.google.com/search?hl=en&num=30&gl=US&q=";
 
     private static final String[] FORBIDDEN_URL_PARTS = {
             "webcache.googleusercontent",
@@ -33,7 +33,8 @@ public class GoogleSearcher {
             "https://www.google.com/intl",
             "google.com.tr/shopping?",
             "jamboard.google.com",
-            "wordplays.com"
+            "google.com/shopping?",
+            "www.google.com"
     };
 
     private static final String[] FORBIDDEN_URLS = {
@@ -59,7 +60,9 @@ public class GoogleSearcher {
             "https://posts.google.com/claim/?mid=/m/05qbbfb&refui=b",
             "https://contacts.google.com/?hl=en&tab=wC",
             "https://maps.google.com.tr/maps?hl=en&tab=wl",
-            "https://www.google.com.tr/webhp?tab=ww"
+            "https://www.google.com.tr/webhp?tab=ww",
+            "https://www.google.com/finance?tab=we",
+            "https://books.google.com/bkshp?hl=en&tab=wp"
     };
 
     private static final String[] FORBIDDEN_PREFIXES = {

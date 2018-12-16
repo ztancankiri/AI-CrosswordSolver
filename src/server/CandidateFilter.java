@@ -1,7 +1,13 @@
 package server;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Random;
 
 public class CandidateFilter {
 
@@ -92,6 +98,78 @@ public class CandidateFilter {
             if (check)
                 result.add(word);
         }
+
+        return result;
+    }
+
+    public ArrayList<Word> removeClueWords(String clueText) {
+        ArrayList<Word> result = new ArrayList<>();
+
+        String text = clueText.toUpperCase().replaceAll("[^a-zA-Z\\s]", "");
+
+        for (int i = 0; i < 5; i++)
+            text = text.replace("  ", " ");
+
+        String[] splitted = text.split(" ");
+
+        for (int i = 0; i < list.size(); i++) {
+            Word w = list.get(i);
+
+            boolean check = true;
+            for (int j = 0; j < splitted.length; j++) {
+                if (w.word.equals(splitted[j]))
+                    check = false;
+            }
+
+            if (check)
+                result.add(w);
+        }
+
+        return result;
+    }
+
+    public ArrayList<Word> filter(String clueText) {
+        ArrayList<Word> result = new ArrayList<>();
+
+        try {
+            String url = clueText.replace(" ", "-");
+            url = "http://crosswordtracker.com/clue/" + url;
+            Document document = Jsoup.connect(url).get();
+            Element node = document.getElementsByClass("answer highlighted").first();
+            String text = node.text();
+
+            for (Word w : list)
+                result.add(w);
+
+            Random rand = new Random();
+            int n = rand.nextInt(9);
+            int prevFreq = result.get(n).freq;
+
+            int index = listContains(result, text);
+            if (index != -1) {
+                if (index > n)
+                    result.get(index).freq = prevFreq + 54;
+            }
+            else {
+                Word word = new Word(text, "CT");
+                word.freq = prevFreq + 54;
+                result.add(word);
+            }
+
+            Comparator<Word> comparator = new Comparator<Word>() {
+                @Override
+                public int compare(Word o1, Word o2) {
+                    return Integer.compare(o2.freq, o1.freq);
+                }
+            };
+
+            result.sort(comparator);
+            return result;
+        }
+        catch (IOException e) {}
+
+        for (Word w : list)
+            result.add(w);
 
         return result;
     }

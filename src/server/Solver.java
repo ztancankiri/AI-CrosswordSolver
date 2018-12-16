@@ -1,6 +1,10 @@
 package server;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -18,6 +22,11 @@ public class Solver {
     public Solver() {
         this.clues = new ArrayList<>();
         this.grid = new char[5][5];
+
+        this.antonymEx = new PyExecutor("python3", "antonyms.py");
+        this.synonymEx = new PyExecutor("python3", "synonyms.py");
+        this.pluralizeEx = new PyExecutor("python3", "pluralize.py");
+        this.singularizeEx = new PyExecutor("python3", "singularize.py");
     }
 
     public void solve(){
@@ -48,19 +57,68 @@ public class Solver {
         for (int i = 0; i < clues.size(); i++) {
             ArrayList<Word> temp = clues.get(i).candidates;
 
-            CandidateFilter filter1 = new CandidateFilter(temp);
-            ArrayList<Word> filtered1 = filter1.filterByLength(clues.get(i).answerLength);
+            CandidateFilter stopCleaner = new CandidateFilter(temp);
+            ArrayList<Word> stopCleaned = stopCleaner.removeStopwords();
 
-            CandidateFilter filter2 = new CandidateFilter(filtered1);
-            ArrayList<Word> filtered2 = filter2.cleanReplicates();
+            /*System.out.println("Going to py scripts...");
 
-            CandidateFilter filter3 = new CandidateFilter(filtered2);
-            ArrayList<Word> filtered3 = filter3.removeStopwords();
+            if (clues.get(i).isPlural) {
+                System.out.println(clues.get(i).isPlural);
+                try {
+                    JSONArray pluralizedArr = pluralizeEx.exec(stopCleaned);
+                    System.out.println(pluralizedArr);
 
-            clues.get(i).candidates = filtered3;
+                    for (Object obj : pluralizedArr) {
+                        JSONObject object = (JSONObject) obj;
+                        String word = object.getString("word");
+                        String plural = object.getString("plural");
+
+                        for (Word w : stopCleaned) {
+                            if (w.word.equals(word))
+                                w.word = plural;
+                        }
+                    }
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                System.out.println(clues.get(i).isPlural);
+                try {
+                    JSONArray singularizedArr = singularizeEx.exec(stopCleaned);
+                    System.out.println(singularizedArr);
+
+                    for (Object obj : singularizedArr) {
+                        JSONObject object = (JSONObject) obj;
+                        String word = object.getString("word");
+                        String singular = object.getString("singular");
+
+                        for (Word w : stopCleaned) {
+                            if (w.word.equals(word))
+                                w.word = singular;
+                        }
+                    }
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }*/
+
+            CandidateFilter repCleaner = new CandidateFilter(stopCleaned);
+            ArrayList<Word> repCleaned = repCleaner.cleanReplicates();
+
+            CandidateFilter lengthFilter = new CandidateFilter(repCleaned);
+            ArrayList<Word> lengthFiltered = lengthFilter.filterByLength(clues.get(i).answerLength);
+
+            CandidateFilter clueWordFilter = new CandidateFilter(lengthFiltered);
+            ArrayList<Word> clueWordFiltered = clueWordFilter.removeClueWords(clues.get(i).question);
+
+            CandidateFilter filter = new CandidateFilter(clueWordFiltered);
+            ArrayList<Word> filterFiltered = filter.removeClueWords(clues.get(i).question);
+
+            clues.get(i).candidates = filterFiltered;
 
             try {
-                FileWriter fileWriter = new FileWriter(clues.get(i).no + "-" + clues.get(i).type + ".txt");
+                FileWriter fileWriter = new FileWriter("candidateLists/" + clues.get(i).no + "-" + clues.get(i).type + ".txt");
                 PrintWriter printWriter = new PrintWriter(fileWriter);
 
                 System.out.println(clues.get(i).question);
@@ -77,6 +135,9 @@ public class Solver {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            System.out.println();
+            System.out.println("Candidate Lists are populated.");
         }
     }
 

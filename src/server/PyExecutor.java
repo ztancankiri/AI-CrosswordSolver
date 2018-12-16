@@ -1,5 +1,10 @@
 package server;
+import org.json.JSONArray;
+
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class PyExecutor {
 
@@ -40,5 +45,58 @@ public class PyExecutor {
         error.close();
         input.close();
         return result;
+    }
+
+    public JSONArray exec(ArrayList<Word> words) throws IOException, InterruptedException  {
+        JSONArray arg = new JSONArray();
+        for (Word w : words) {
+            arg.put(w.word);
+        }
+
+        String toFile = arg.toString().replace("\"", "'").replace("\\r\\n", "");
+
+        System.out.println(toFile);
+
+        Writer fileWriter = new FileWriter("tempJSON.txt", false);
+        fileWriter.write(toFile);
+        fileWriter.close();
+
+        StringBuilder command = new StringBuilder();
+        command.append(pyBin);
+        command.append(" ");
+        command.append(PY_SCRIPT_DIRECTORY);
+        command.append(script);
+        command.append(" ");
+        command.append("tempJSON.txt");
+
+        Process process = Runtime.getRuntime().exec(command.toString());
+        process.waitFor();
+
+        BufferedReader error = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        String err = error.readLine();
+
+        if (err != null)
+            System.out.println(error.readLine());
+
+       /* BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String text = input.readLine();*/
+
+        error.close();
+        /*input.close();*/
+
+        String text = "";
+        try {
+            text = readFileAsString("outJSON.txt");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new JSONArray(text);
+    }
+
+    private String readFileAsString(String fileName) throws Exception {
+        String data = "";
+        data = new String(Files.readAllBytes(Paths.get(fileName)));
+        return data;
     }
 }

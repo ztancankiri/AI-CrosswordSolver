@@ -1,5 +1,8 @@
 package server;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -53,7 +56,7 @@ public class Test  {
         String result = executor.exec("energy");
         System.out.println(result);*/
 
-        ThesaurusScraper thesaurusScraper = new ThesaurusScraper("bad");
+     /*   ThesaurusScraper thesaurusScraper = new ThesaurusScraper("bad");
         thesaurusScraper.get();
         ArrayList<String> list_s = thesaurusScraper.getSynonyms();
         ArrayList<String> list_a = thesaurusScraper.getAntonyms();
@@ -69,7 +72,31 @@ public class Test  {
 
         for (String ant : list_a) {
             System.out.println(ant);
-        }
+        }*/
 
+
+        /*PyExecutor executor = new PyExecutor("python3", "pluralize.py");
+
+        ArrayList<Word> words = new ArrayList<>();
+        words.add(new Word("man", ""));
+        words.add(new Word("dog", ""));
+        words.add(new Word("woman", ""));
+        words.add(new Word("book", ""));
+        words.add(new Word("girls", ""));
+        words.add(new Word("fantasy", ""));
+        words.add(new Word("fish", ""));
+
+        JSONArray result = executor.exec(words);
+
+        for (Object obj : result) {
+            JSONObject object = (JSONObject) obj;
+            String word = object.getString("word");
+            String plural = object.getString("plural");
+
+            System.out.println(word + " -> " + plural);
+        }*/
+
+        PyExecutor e = new PyExecutor("python3", "test.py");
+        System.out.println(e.exec(""));
     }
 }

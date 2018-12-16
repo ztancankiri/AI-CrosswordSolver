@@ -29,7 +29,8 @@ public class Clue {
 
         executor = new PyExecutor("python3", "isPlural.py");
         try {
-            isPlural = Boolean.parseBoolean(executor.exec(question));
+            //isPlural = Boolean.parseBoolean(executor.exec(question));
+            isPlural = false;
         }
         catch (Exception e){
             System.out.println(e.toString());
