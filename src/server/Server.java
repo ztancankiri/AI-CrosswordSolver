@@ -25,6 +25,7 @@ public class Server extends WebSocketServer {
     Solver solver;
 
     JSONObject solveJSON;
+    boolean today;
     
     public Server(InetSocketAddress address, boolean debug) {
         super(address);
@@ -48,6 +49,8 @@ public class Server extends WebSocketServer {
         JSONObject msgObject = new JSONObject(message);
         
         if (msgObject.getString("type").equals("getPuzzle")) {
+            today = true;
+            solver.reset();
             sendInfoMessage(conn, "Connecting to nytimes.com");
             CrosswordPuzzleScraper scraper = new CrosswordPuzzleScraper(DEBUG);
             
@@ -71,11 +74,11 @@ public class Server extends WebSocketServer {
                             obj.put("char", scraper.getFullTable()[i][j]);
                             grid.add(obj);
 
-                            //solver.finishedGrid[i][j] = scraper.getFullTable()[i][j];
+                            solver.finishedGrid[i][j] = scraper.getFullTable()[i][j];
                         }
                         else {
                             blackCells.add(pos);
-                            //solver.addBlackCellsToGrid(pos);
+                            solver.addBlackCellsToGrid(pos);
                         }
                     }
                 }
@@ -93,7 +96,7 @@ public class Server extends WebSocketServer {
                     obj.put("clue", scraper.getQuestion("Across", i));
                     acrossClues.add(obj);
                     Clue clue = new Clue(scraper.getQuestion("Across", i), 0, Clue.ACROSS, i);
-                    //solver.addClue(clue);
+                    solver.addClue(clue);
                 }
                 
                 ArrayList<JSONObject> downClues = new ArrayList<>();
@@ -104,7 +107,7 @@ public class Server extends WebSocketServer {
                     obj.put("clue", scraper.getQuestion("Down", i));
                     downClues.add(obj);
                     Clue clue = new Clue(scraper.getQuestion("Down", i), 0, Clue.DOWN, i);
-                    //solver.addClue(clue);
+                    solver.addClue(clue);
                 }
                 sendInfoMessage(conn, "Getting down clues.");
 
@@ -115,7 +118,7 @@ public class Server extends WebSocketServer {
                     obj.put("no", i);
                     obj.put("pos", scraper.getQuestionPos(i) + 1);
                     questionPos.add(obj);
-                    //solver.addQPos(i, scraper.getQuestionPos(i) + 1);
+                    solver.addQPos(i, scraper.getQuestionPos(i) + 1);
                 }
                 sendInfoMessage(conn, "Getting question coordinates.");
 
@@ -162,6 +165,7 @@ public class Server extends WebSocketServer {
             conn.send(responseObject.toString());
         }
         else if (msgObject.getString("type").equals("getPuzzleFromArchive")) {
+            today = false;
             String puzzleDate = msgObject.getString("date");
             solveJSON = new JSONObject(readFileAsString("puzzleArchive/" + puzzleDate + ".json"));
             solveJSON.put("type", "puzzleFromArchive");
@@ -179,13 +183,28 @@ public class Server extends WebSocketServer {
             System.out.println(responseObject.toString());
             conn.send(responseObject.toString());
         }
-        else if(msgObject.getString("type").equals("solve")){
-            initializeClues(solveJSON);
-            solver.solve();
+        else if(msgObject.getString("type").equals("solve")) {
+            if(!today)
+                initializeClues(solveJSON);
+
+            String[][] finalGrid = solver.solve();
+            solveJSON = new JSONObject();
+            ArrayList<JSONObject> grid = new ArrayList<>();
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 5; j++) {
+                    int pos = (i * 5) + j + 1;
+                    if (!finalGrid[i][j].equals("#") || !finalGrid[i][j].equals("0")) {
+                        JSONObject obj = new JSONObject();
+                        obj.put("pos", pos);
+                        obj.put("char", finalGrid[i][j]);
+                        grid.add(obj);
+                    }
+                }
+            }
+            solveJSON.put("type", "solution");
+            solveJSON.put("grid", grid.toArray());
+            conn.send(solveJSON.toString());
         }
-
-
-
 
         else if (msgObject.getString("type").equals("test")) {
             JSONObject responseObject = new JSONObject();
@@ -238,17 +257,15 @@ public class Server extends WebSocketServer {
     }
 
     private void initializeClues(JSONObject object){
-        solver = new Solver();
-        System.out.println("down clue");
-        JSONObject[] downClues = (JSONObject[]) object.get("downClues");
-        System.out.println("across");
-        JSONArray acrossClues = (JSONArray) object.get("acrossClues");
-        System.out.println("black");
-        int[] blackCells = (int[]) object.get("blackCells");
-        System.out.println("question");
-        JSONArray qPosArray = (JSONArray) object.get("questionPos");
-        System.out.println("grid");
-        JSONArray grid = (JSONArray) object.get("grid");
+        solver.reset();
+        JSONArray downClues = object.getJSONArray("downClues");
+        JSONArray acrossClues = object.getJSONArray("acrossClues");
+        JSONArray blackCells = object.getJSONArray("blackCells");
+
+        System.out.println(blackCells.toString());
+
+        JSONArray qPosArray = object.getJSONArray("questionPos");
+        JSONArray grid = object.getJSONArray("grid");
 
         for(Object o : downClues){
             int no = (int) ((JSONObject) o).get("no");
@@ -266,10 +283,11 @@ public class Server extends WebSocketServer {
 
         String[][] fullGrid = new String[5][5];
 
-        for(int i : blackCells){
-            int col = (i - 1) % 5;
-            int row = (i - 1) / 5;
-            solver.addBlackCellsToGrid(i);
+        for(int i = 0; i < blackCells.length(); i++){
+            int pos = blackCells.getInt(i);
+            int col = (pos - 1) % 5;
+            int row = (pos - 1) / 5;
+            solver.addBlackCellsToGrid(pos);
             fullGrid[row][col] = "#";
         }
 
@@ -286,7 +304,6 @@ public class Server extends WebSocketServer {
             int row = (pos - 1) / 5;
             fullGrid[row][col] = s;
         }
-
         solver.finishedGrid = fullGrid;
 
     }

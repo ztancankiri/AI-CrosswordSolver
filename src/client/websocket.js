@@ -114,6 +114,14 @@ function onMessage(event) {
 		
 		setTimeout(showPuzzle, 1);
 	}
+	else if(msgObj.type == 'solution'){
+		if (msgObj.grid.length > 0) {
+			for (var i = 0; i < msgObj.grid.length; i++) {
+				var grid = msgObj.grid[i];
+				setCellCenterText("#cell_" + grid.pos, grid.char);
+			}
+		}
+	}
 	else if (msgObj.type === 'date') {
 		$("#date").text(msgObj.date);
 		

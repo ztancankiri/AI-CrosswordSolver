@@ -40,7 +40,7 @@ public class Solver {
         this.singularizeEx = new PyExecutor("python3", "singularize.py");
     }
 
-    public void solve(){
+    public String[][] solve(){
         System.out.println("Clue Length");
         calculateClueLength();
 
@@ -155,6 +155,7 @@ public class Solver {
         System.out.println("Puzzle solving...");
 
         solvePuzzle();
+        return grid;
     }
 
     public void addClue(Clue clue) {
@@ -265,7 +266,7 @@ public class Solver {
         int col = (clue.pos - 1) % 5;
         int row = (clue.pos - 1) / 5;
 
-        while (!clue.candidates.isEmpty()) {
+        while (!clue.candidates.isEmpty() && !isGridFull()) {
             Word candidate = clue.candidates.get(0);
 
             if (clue.type == Clue.ACROSS) {
