@@ -68,6 +68,8 @@ public class Server extends WebSocketServer {
                             obj.put("pos", pos);
                             obj.put("char", scraper.getFullTable()[i][j]);
                             grid.add(obj);
+
+                            solver.finishedGrid[i][j] = scraper.getFullTable()[i][j];
                         }
                         else {
                             blackCells.add(pos);
@@ -75,6 +77,8 @@ public class Server extends WebSocketServer {
                         }
                     }
                 }
+
+
 
                 sendInfoMessage(conn, "Getting solutions.");
 

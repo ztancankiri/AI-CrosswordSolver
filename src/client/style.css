@@ -53,7 +53,6 @@ p {
 
 .solutionWrapper {
 	float: left;
-	margin-left: 50px;
 	margin-right: 100px;
 	margin-top: 100px;
 	margin-bottom: 100px;
@@ -205,6 +204,7 @@ div#loadingInner {
 .clues {
 	float: left;
 	margin-left: 50px;
+	margin-right: 50px;
 	margin-top: 125px;
 	background: #a9daff;
 	border-radius: 8px;

@@ -24,6 +24,8 @@ public class Clue {
 
     public PyExecutor executor;
 
+    public String answer;
+
 
     public ArrayList<Integer> editedAfter;
 
@@ -34,6 +36,7 @@ public class Clue {
         this.no = no;
         this.answerLength = 0;
         this.editedAfter = new ArrayList<>();
+        this.answer = "";
 
         executor = new PyExecutor("python3", "isPlural.py");
         try {
@@ -43,6 +46,10 @@ public class Clue {
         catch (Exception e){
             System.out.println(e.toString());
         }
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 
     public boolean isDown() {

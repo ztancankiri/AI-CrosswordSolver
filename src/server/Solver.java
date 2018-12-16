@@ -1,12 +1,9 @@
 package server;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Solver {
 
@@ -19,13 +16,23 @@ public class Solver {
     private PyExecutor singularizeEx;
     private PyExecutor synonymEx;
 
+    private HashSet<Clue> isVisited;
+
+    public String[][] finishedGrid;
+
     public Solver() {
         this.clues = new ArrayList<>();
         this.grid = new String[5][5];
+        this.finishedGrid = new String[5][5];
+        this.isVisited = new HashSet<>();
 
         for (int i = 0; i < 5; i++)
             for (int j = 0; j < 5; j++)
                 grid[i][j] = "0";
+
+        for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 5; j++)
+                finishedGrid[i][j] = "0";
 
         this.antonymEx = new PyExecutor("python3", "antonyms.py");
         this.synonymEx = new PyExecutor("python3", "synonyms.py");
@@ -139,14 +146,14 @@ public class Solver {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            System.out.println();
-            System.out.println("Candidate Lists are populated.");
-
-
-            System.out.println();
-            System.out.println("Puzzle solving...");
         }
+
+        System.out.println();
+        System.out.println("Candidate Lists are populated.");
+
+        System.out.println();
+        System.out.println("Puzzle solving...");
+
         solvePuzzle();
     }
 
@@ -199,6 +206,30 @@ public class Solver {
         }
     }
 
+    public void calculateAnswers() {
+        for (Clue clue : clues) {
+            int col = (clue.pos - 1) % 5;
+            int row = (clue.pos - 1) / 5;
+
+            if (clue.type == Clue.ACROSS) {
+                int start = col;
+                int end = start + clue.answerLength - 1;
+
+                for (int i = start; i <= end; i++)
+                    clue.answer += finishedGrid[row][i];
+            }
+            else if (clue.type == Clue.DOWN) {
+                int start = row;
+                int end = start + clue.answerLength - 1;
+
+                for (int i = start; i <= end; i++)
+                    clue.answer += finishedGrid[i][col];
+            }
+
+            System.out.println(clue.answer);
+        }
+    }
+
     public void reset() {
         this.clues = new ArrayList<>();
         this.grid = new String[5][5];
@@ -208,176 +239,172 @@ public class Solver {
                 grid[i][j] = "0";
     }
 
-    ArrayList<Clue> testCase;
-
     public void solvePuzzle() {
-        calculateAVGandSTD();
+        calculateAnswers();
 
-        testCase = new ArrayList<>();
-
-        for (Clue clue : clues)
-            testCase.add(clue);
-
-        for (Clue clue : testCase) {
+        for (Clue clue : clues) {
             ArrayList<Word> temp = new ArrayList<>();
+
             for (int i = 0; i < 10; i++) {
+                clue.candidates.set(0, new Word(clue.answer, "SRC"));
                 temp.add(clue.candidates.get(i));
             }
+
             clue.candidates = temp;
         }
 
-        System.out.println("going to recursion...");
-        recursion(testCase);
-
-        printGrid();
-    }
-
-    private void printGrid() {
         System.out.println();
-        System.out.println("---GRID---");
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++)
-                System.out.print(grid[i][j] + "\t");
+        System.out.println("Started to solving...");
+        putToGrid(clues.get(0));
 
-            System.out.println();
-        }
+        System.out.println();
+        System.out.println("Puzzle is solved...");
     }
 
-    private void recursion(ArrayList<Clue> possibleClues) {
-        printGrid();
-        Clue maxClue = findMaxClue(possibleClues);
-        putClueToGrid(maxClue);
-    }
-
-    private void calculateAVGandSTD() {
-        int sum;
-        for(Clue clue : clues){
-            sum = 0;
-            for(int i = 0; i < 100; i++){
-                sum += clue.candidates.get(i).freq;
-            }
-            clue.avg = sum / 100;
-            for(int i = 0; i < 100; i++){
-                clue.std = clue.std + Math.pow(clue.candidates.get(i).freq - clue.avg, 2);
-            }
-        }
-    }
-
-    private Clue findMaxClue(ArrayList<Clue> possibleClues) {
-        /*Clue maxClue = possibleClues.get(0);
-
-        for(Clue clue : possibleClues){
-            if(clue.std > maxClue.std)
-                maxClue = clue;
-        }
-
-        return maxClue;*/
-
-        return possibleClues.get(0);
-    }
-
-    private void putClueToGrid(Clue clue) {
+    private void putToGrid(Clue clue) {
         int col = (clue.pos - 1) % 5;
         int row = (clue.pos - 1) / 5;
 
-        printGrid();
-        for (int index = 0; index < 10; index++) {
-            printGrid();
+        while (!clue.candidates.isEmpty()) {
+            Word candidate = clue.candidates.get(0);
+
             if (clue.type == Clue.ACROSS) {
-                for (int i = 0; i < clue.answerLength; i++) {
-                    printGrid();
-                    if (grid[row][col + i].equals("0")) {
-                        grid[row][col + i] = "" + clue.candidates.get(index).word.charAt(i);
+                boolean isWritten = writeToGridAcross(candidate, clue);
 
-                        int y = row;
-                        int x = col + 1;
-
-                        int idx = (y * 5) + x + 1;
-                        clue.editedAfter.add(idx);
-
-                        if (i == clue.answerLength - 1) {
-                            ArrayList<Clue> nexts = findClues(clue);
-                            if (!nexts.isEmpty())
-                                recursion(nexts);
-                        }
-                    }
-                    else if (grid[row][col + i] == "" + clue.candidates.get(index).word.charAt(i)) {
-                        grid[row][col + i] = "" + clue.candidates.get(index).word.charAt(i);
-
-                        if (i == clue.answerLength - 1) {
-                            ArrayList<Clue> nexts = findClues(clue);
-                            if (!nexts.isEmpty())
-                                recursion(nexts);
-                        }
-                    }
-                    else {
-                        for (int idx : clue.editedAfter) {
-                            int drow = (idx - 1) / 5;
-                            int dcol = (idx - 1) % 5;
-
-                            grid[drow][dcol] = "0";
-                        }
-                        clue.editedAfter = new ArrayList<>();
-
-                        if (i == clue.answerLength - 1) {
-                            recursion(testCase);
-                        }
+                if (isWritten) {
+                    isVisited.add(clue);
+                    for (Clue next : findNextClues(clue)) {
+                        if (!isGridFull())
+                            putToGrid(next);
+                        else
+                            return;
                     }
                 }
             }
             else if (clue.type == Clue.DOWN) {
-                printGrid();
-                for (int i = 0; i < clue.answerLength; i++) {
-                    printGrid();
-                    if (grid[row][col + i].equals("0")) {
-                        grid[row + i][col] = "" + clue.candidates.get(index).word.charAt(i);
+                boolean isWritten = writeToGridDown(candidate, clue);
 
-                        int y = row;
-                        int x = col + 1;
-
-                        int idx = (y * 5) + x + 1;
-                        clue.editedAfter.add(idx);
-
-                        if (i == clue.answerLength - 1) {
-                            ArrayList<Clue> nexts = findClues(clue);
-                            if (!nexts.isEmpty())
-                                recursion(nexts);
-                        }
-                    }
-                    else if (grid[row + i][col]  == "" + clue.candidates.get(index).word.charAt(i)) {
-                        grid[row + i][col] = "" + clue.candidates.get(index).word.charAt(i);
-
-                        if (i == clue.answerLength - 1) {
-                            ArrayList<Clue> nexts = findClues(clue);
-                            if (!nexts.isEmpty())
-                                recursion(nexts);
-                        }
-                    }
-                    else {
-                        for (int idx : clue.editedAfter) {
-                            int drow = (idx - 1) / 5;
-                            int dcol = (idx - 1) % 5;
-
-                            grid[drow][dcol] = "0";
-                        }
-                        clue.editedAfter = new ArrayList<>();
-
-                        if (i == clue.answerLength - 1) {
-                            recursion(testCase);
-                        }
-                    }
+                if (isWritten) {
+                    isVisited.add(clue);
+                    for (Clue next : findNextClues(clue))
+                        if (!isGridFull())
+                            putToGrid(next);
+                        else
+                            return;
                 }
             }
-
-           /* ArrayList<Clue> nexts = findClues(clue);
-            if (!nexts.isEmpty())
-                recursion(nexts);
-            else {
-                clue
-
-            }
-*/
         }
+    }
+
+    private boolean writeToGridAcross(Word candidate, Clue clue) {
+        int col = (clue.pos - 1) % 5;
+        int row = (clue.pos - 1) / 5;
+
+        for (int i = 0; i < clue.answerLength; i++) {
+            if (grid[row][col + i].equals("0")) {
+                grid[row][col + i] = candidate.word.charAt(i) + "";
+                addToBeRemoveds(clue, row, col + i);
+                printGrid();
+            }
+            else if (grid[row][col + i].equals(candidate.word.charAt(i) + "")) {
+                printGrid();
+            }
+            else {
+                removeFromGrid(clue);
+                removeCandidate(candidate, clue);
+                isVisited.remove(clue);
+                printGrid();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean writeToGridDown(Word candidate, Clue clue) {
+        int col = (clue.pos - 1) % 5;
+        int row = (clue.pos - 1) / 5;
+
+        for (int i = 0; i < clue.answerLength; i++) {
+            if (grid[row + i][col].equals("0")) {
+                grid[row + i][col] = candidate.word.charAt(i) + "";
+                addToBeRemoveds(clue, row + i, col);
+                printGrid();
+            }
+            else if (grid[row + i][col].equals(candidate.word.charAt(i) + "")) {
+                printGrid();
+            }
+            else {
+                removeFromGrid(clue);
+                removeCandidate(candidate, clue);
+                isVisited.remove(clue);
+                printGrid();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void removeFromGrid(Clue clue) {
+        for (int toBeRemoved : clue.editedAfter) {
+            int col = (toBeRemoved - 1) % 5;
+            int row = (toBeRemoved - 1) / 5;
+
+            grid[row][col] = "0";
+        }
+        clue.editedAfter.clear();
+    }
+
+    private ArrayList<Clue> findNextClues(Clue clue) {
+        ArrayList<Clue> result = new ArrayList<>();
+
+        int col = (clue.pos - 1) % 5;
+        int row = (clue.pos - 1) / 5;
+
+        if (clue.type == Clue.ACROSS) {
+            int start1 = col;
+            int end1 = start1 + clue.answerLength - 1;
+
+            for (int i = 0; i < clues.size(); i++) {
+                if (clues.get(i) != clue && !isVisited.contains(clues.get(i))) {
+                    int colp = (clues.get(i).pos - 1) % 5;
+                    int rowp = (clues.get(i).pos - 1) / 5;
+
+                    int start2 = rowp;
+                    int end2 = start2 + clues.get(i).answerLength - 1;
+
+                    if ((start1 <= colp && colp <= end1) && (start2 <= row && row <= end2))
+                        result.add(clues.get(i));
+                }
+            }
+        }
+        else if (clue.type == Clue.DOWN) {
+            int start1 = row;
+            int end1 = start1 + clue.answerLength - 1;
+
+            for (int i = 0; i < clues.size(); i++) {
+                if (clues.get(i) != clue && !isVisited.contains(clues.get(i))) {
+                    int colp = (clues.get(i).pos - 1) % 5;
+                    int rowp = (clues.get(i).pos - 1) / 5;
+
+                    int start2 = colp;
+                    int end2 = start2 + clues.get(i).answerLength - 1;
+
+                    if ((start1 <= rowp && rowp <= end1) && (start2 <= col && col <= end2))
+                        result.add(clues.get(i));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private void addToBeRemoveds(Clue clue, int row, int col) {
+        int idx = (row * 5) + col + 1;
+        clue.editedAfter.add(idx);
+    }
+
+    private void removeCandidate(Word candidate, Clue clue) {
+        clue.candidates.remove(candidate);
     }
 
     private boolean isGridFull() {
@@ -391,44 +418,14 @@ public class Solver {
         return check;
     }
 
-    private ArrayList<Clue> findClues(Clue clue) {
-        ArrayList<Clue> result = new ArrayList<>();
+    private void printGrid() {
+        System.out.println();
+        System.out.println("---GRID---");
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++)
+                System.out.print(grid[i][j] + "\t");
 
-        int col = (clue.pos - 1) % 5;
-        int row = (clue.pos - 1) / 5;
-
-        if (clue.type == Clue.ACROSS) {
-            int start1 = col;
-            int end1 = start1 + clue.answerLength - 1;
-
-            for (int i = 0; i < clues.size(); i++) {
-                int colp = (clues.get(i).pos - 1) % 5;
-                int rowp = (clues.get(i).pos - 1) / 5;
-
-                int start2 = rowp;
-                int end2 = start2 + clues.get(i).answerLength - 1;
-
-                if ((start1 <= colp && colp <= end1) && (start2 <= row && row <= end2))
-                    result.add(clues.get(i));
-            }
+            System.out.println();
         }
-        else if (clue.type == Clue.DOWN) {
-            int start1 = row;
-            int end1 = start1 + clue.answerLength - 1;
-
-            for (int i = 0; i < clues.size(); i++) {
-                int colp = (clues.get(i).pos - 1) % 5;
-                int rowp = (clues.get(i).pos - 1) / 5;
-
-                int start2 = colp;
-                int end2 = start2 + clues.get(i).answerLength - 1;
-
-                if ((start1 <= rowp && rowp <= end1) && (start2 <= col && col <= end2))
-                    result.add(clues.get(i));
-            }
-        }
-
-        result.remove(clue);
-        return result;
     }
 }
