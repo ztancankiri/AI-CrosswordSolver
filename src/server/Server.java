@@ -51,6 +51,7 @@ public class Server extends WebSocketServer {
         if (msgObject.getString("type").equals("getPuzzle")) {
             today = true;
             solver.reset();
+            solver.today = true;
             sendInfoMessage(conn, "Connecting to nytimes.com");
             CrosswordPuzzleScraper scraper = new CrosswordPuzzleScraper(DEBUG);
             
@@ -187,6 +188,7 @@ public class Server extends WebSocketServer {
             if(!today)
                 initializeClues(solveJSON);
 
+
             String[][] finalGrid = solver.solve();
             solveJSON = new JSONObject();
             ArrayList<JSONObject> grid = new ArrayList<>();
@@ -259,6 +261,7 @@ public class Server extends WebSocketServer {
 
     private void initializeClues(JSONObject object){
         solver.reset();
+        solver.today = false;
         System.out.println("> ");
         JSONArray downClues = object.getJSONArray("downClues");
         JSONArray acrossClues = object.getJSONArray("acrossClues");

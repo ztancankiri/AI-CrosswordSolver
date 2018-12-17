@@ -4,6 +4,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxBinary;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -87,9 +91,17 @@ public class GoogleSearcher {
 
     private ArrayList<String> searchResults;
 
+    private final WebDriver DRIVER;
+
     public GoogleSearcher() {
         this.searchText = "";
         this.searchResults = new ArrayList<>();
+
+        FirefoxBinary firefoxBinary = new FirefoxBinary();
+
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
+        firefoxOptions.setBinary(firefoxBinary);
+        this.DRIVER = new FirefoxDriver(firefoxOptions);
     }
 
     public void search(String searchText) {
@@ -97,7 +109,12 @@ public class GoogleSearcher {
         createSearchURL();
 
         try {
-            Document document = Jsoup.connect(searchURL).get();
+            // Document document = Jsoup.connect(searchURL).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").get();
+
+            DRIVER.get(searchURL);
+            String html = DRIVER.getPageSource();
+            Document document = Jsoup.parse(html);
+
             Elements aTags = document.getElementsByTag("a");
 
             for (Element a : aTags) {
@@ -105,7 +122,7 @@ public class GoogleSearcher {
                 if (!isForbidden(aHref))
                     searchResults.add(aHref);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

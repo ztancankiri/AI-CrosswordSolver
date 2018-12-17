@@ -58,6 +58,10 @@ public class CrosswordPuzzleScraper {
     public void initialize() {
         DRIVER.get("https://www.nytimes.com/crosswords/game/mini" + (DEBUG ? "/2016/10/10" : ""));
 
+        //WebElement accept = DRIVER.findElement(By.xpath("//*[@id=\"a_\"]"));
+        //accept.click();
+
+
         List<WebElement> button_list = DRIVER.findElements(By.tagName("button"));
         for (WebElement button : button_list) {
             if (button.getAttribute("class").contains("buttons-modalButton")) {

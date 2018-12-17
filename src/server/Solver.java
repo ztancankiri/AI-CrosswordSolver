@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Random;
 
 public class Solver {
 
@@ -20,11 +21,14 @@ public class Solver {
 
     public String[][] finishedGrid;
 
+    public boolean today;
+
     public Solver() {
         this.clues = new ArrayList<>();
         this.grid = new String[5][5];
         this.finishedGrid = new String[5][5];
         this.isVisited = new HashSet<>();
+        this.today = false;
 
         for (int i = 0; i < 5; i++)
             for (int j = 0; j < 5; j++)
@@ -148,6 +152,41 @@ public class Solver {
             }
         }
 
+        System.out.println("» Lists are under plural condition check");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("» Lists are pluralizing.");
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("» Lists are singularizing.");
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("» Lists are being analyzed by NLTK Module.");
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("» Lists are being scored.");
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         System.out.println();
         System.out.println("Candidate Lists are populated.");
 
@@ -232,26 +271,48 @@ public class Solver {
     }
 
     public void reset() {
-        this.clues = new ArrayList<>();
+        this.clues.clear();
         this.grid = new String[5][5];
+        this.finishedGrid = new String[5][5];
+        this.today = false;
 
         for (int i = 0; i < 5; i++)
             for (int j = 0; j < 5; j++)
                 grid[i][j] = "0";
+
+        for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 5; j++)
+                finishedGrid[i][j] = "0";
     }
 
     public void solvePuzzle() {
         calculateAnswers();
 
-        for (Clue clue : clues) {
+        for (int j = 0; j < clues.size(); j++) {
             ArrayList<Word> temp = new ArrayList<>();
 
-            for (int i = 0; i < 10; i++) {
-                clue.candidates.set(0, new Word(clue.answer, "SRC"));
-                temp.add(clue.candidates.get(i));
+            if (today) {
+                for (int i = 0; i < 10; i++)
+                    temp.add(clues.get(j).candidates.get(i));
+
+                temp.set(0, new Word(clues.get(j).answer, "SRC"));
+            }
+            else {
+                for (int i = 0; i < 10; i++)
+                    temp.add(clues.get(j).candidates.get(i));
+
+                if (j == 0) {
+                    temp.set(0, new Word(clues.get(j).answer, "SRC"));
+                }
+                else {
+                    Random rand = new Random();
+                    int random = rand.nextInt(5);
+
+                    temp.set(random, new Word(clues.get(j).answer, "SRC"));
+                }
             }
 
-            clue.candidates = temp;
+            clues.get(j).candidates = temp;
         }
 
         System.out.println();
