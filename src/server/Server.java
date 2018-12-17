@@ -193,7 +193,7 @@ public class Server extends WebSocketServer {
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 5; j++) {
                     int pos = (i * 5) + j + 1;
-                    if (!finalGrid[i][j].equals("#") || !finalGrid[i][j].equals("0")) {
+                    if (!finalGrid[i][j].equals("#") && !finalGrid[i][j].equals("0")) {
                         JSONObject obj = new JSONObject();
                         obj.put("pos", pos);
                         obj.put("char", finalGrid[i][j]);
@@ -203,6 +203,7 @@ public class Server extends WebSocketServer {
             }
             solveJSON.put("type", "solution");
             solveJSON.put("grid", grid.toArray());
+            System.out.println(">> Pushing grid to frontend.");
             conn.send(solveJSON.toString());
         }
 
@@ -258,11 +259,11 @@ public class Server extends WebSocketServer {
 
     private void initializeClues(JSONObject object){
         solver.reset();
+        System.out.println("> ");
         JSONArray downClues = object.getJSONArray("downClues");
         JSONArray acrossClues = object.getJSONArray("acrossClues");
         JSONArray blackCells = object.getJSONArray("blackCells");
 
-        System.out.println(blackCells.toString());
 
         JSONArray qPosArray = object.getJSONArray("questionPos");
         JSONArray grid = object.getJSONArray("grid");

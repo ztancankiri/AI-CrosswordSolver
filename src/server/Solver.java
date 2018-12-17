@@ -266,6 +266,8 @@ public class Solver {
         int col = (clue.pos - 1) % 5;
         int row = (clue.pos - 1) / 5;
 
+        int counter = 0;
+
         while (!clue.candidates.isEmpty() && !isGridFull()) {
             Word candidate = clue.candidates.get(0);
 
@@ -293,6 +295,10 @@ public class Solver {
                         else
                             return;
                 }
+            }
+            counter++;
+            if(counter < 10000){
+                break;
             }
         }
     }
