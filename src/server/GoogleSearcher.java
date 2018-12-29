@@ -91,7 +91,6 @@ public class GoogleSearcher {
 
     private ArrayList<String> searchResults;
 
-    private final WebDriver DRIVER;
 
     public GoogleSearcher() {
         this.searchText = "";
@@ -99,9 +98,9 @@ public class GoogleSearcher {
 
         FirefoxBinary firefoxBinary = new FirefoxBinary();
 
-        FirefoxOptions firefoxOptions = new FirefoxOptions();
-        firefoxOptions.setBinary(firefoxBinary);
-        this.DRIVER = new FirefoxDriver(firefoxOptions);
+//        FirefoxOptions firefoxOptions = new FirefoxOptions();
+//        firefoxOptions.setBinary(firefoxBinary);
+//        this.DRIVER = new FirefoxDriver(firefoxOptions);
     }
 
     public void search(String searchText) {
@@ -109,11 +108,11 @@ public class GoogleSearcher {
         createSearchURL();
 
         try {
-            // Document document = Jsoup.connect(searchURL).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").get();
+             Document document = Jsoup.connect(searchURL).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").get();
 
-            DRIVER.get(searchURL);
-            String html = DRIVER.getPageSource();
-            Document document = Jsoup.parse(html);
+            //DRIVER.get(searchURL);
+            //String html = DRIVER.getPageSource();
+            //Document document = Jsoup.parse(html);
 
             Elements aTags = document.getElementsByTag("a");
 
