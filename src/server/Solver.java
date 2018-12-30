@@ -23,6 +23,8 @@ public class Solver {
 
     public boolean today;
 
+    public int choose;
+
     public Solver() {
         this.clues = new ArrayList<>();
         this.grid = new String[5][5];
@@ -37,6 +39,8 @@ public class Solver {
         for (int i = 0; i < 5; i++)
             for (int j = 0; j < 5; j++)
                 finishedGrid[i][j] = "0";
+
+        reset();
 
         this.antonymEx = new PyExecutor("python3", "antonyms.py");
         this.synonymEx = new PyExecutor("python3", "synonyms.py");
@@ -194,6 +198,8 @@ public class Solver {
         System.out.println("Puzzle solving...");
 
         solvePuzzle();
+
+        gridManipulate();
         return grid;
     }
 
@@ -265,8 +271,6 @@ public class Solver {
                 for (int i = start; i <= end; i++)
                     clue.answer += finishedGrid[i][col];
             }
-
-            System.out.println(clue.answer);
         }
     }
 
@@ -283,6 +287,16 @@ public class Solver {
         for (int i = 0; i < 5; i++)
             for (int j = 0; j < 5; j++)
                 finishedGrid[i][j] = "0";
+
+        Random rand = new Random();
+        int randInt = rand.nextInt(100);
+
+        if (randInt >= 50) {
+            choose = 1;
+        }
+        else {
+            choose = 2;
+        }
     }
 
     public void solvePuzzle() {
@@ -290,6 +304,8 @@ public class Solver {
 
         for (int j = 0; j < clues.size(); j++) {
             ArrayList<Word> temp = new ArrayList<>();
+
+            today = false;
 
             if (today) {
                 for (int i = 0; i < 10; i++)
@@ -362,6 +378,10 @@ public class Solver {
                 break;
             }
         }
+    }
+
+    private void gridManipulate() {
+        this.grid[2][choose] = "0";
     }
 
     private boolean writeToGridAcross(Word candidate, Clue clue) {
@@ -490,9 +510,12 @@ public class Solver {
         System.out.println();
         System.out.println("---GRID---");
         for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++)
-                System.out.print(grid[i][j] + "\t");
-
+            for (int j = 0; j < 5; j++) {
+                if (i == 2 && j == choose)
+                    System.out.print("0\t");
+                else
+                    System.out.print(grid[i][j] + "\t");
+            }
             System.out.println();
         }
     }

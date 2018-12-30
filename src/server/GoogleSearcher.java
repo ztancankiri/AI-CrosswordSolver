@@ -14,7 +14,8 @@ import java.util.ArrayList;
 
 public class GoogleSearcher {
 
-    private static final String SEARCH_URL = "https://www.google.com/search?hl=en&num=30&gl=US&q=";
+    //private static final String SEARCH_URL = "https://www.google.com/search?hl=en&num=30&gl=US&q=";
+    private static final String SEARCH_URL = "https://www.bing.com/search?count=30&q=";
 
     private static final String[] FORBIDDEN_URL_PARTS = {
             "webcache.googleusercontent",
@@ -38,7 +39,11 @@ public class GoogleSearcher {
             "google.com.tr/shopping?",
             "jamboard.google.com",
             "google.com/shopping?",
-            "www.google.com"
+            "www.google.com",
+            "crossword",
+            "microsoft",
+            "office",
+            "bing"
     };
 
     private static final String[] FORBIDDEN_URLS = {
@@ -91,17 +96,17 @@ public class GoogleSearcher {
 
     private ArrayList<String> searchResults;
 
-    private final WebDriver DRIVER;
+    //private final WebDriver DRIVER;
 
     public GoogleSearcher() {
         this.searchText = "";
         this.searchResults = new ArrayList<>();
 
-        FirefoxBinary firefoxBinary = new FirefoxBinary();
+        /*FirefoxBinary firefoxBinary = new FirefoxBinary();
 
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         firefoxOptions.setBinary(firefoxBinary);
-        this.DRIVER = new FirefoxDriver(firefoxOptions);
+        this.DRIVER = new FirefoxDriver(firefoxOptions);*/
     }
 
     public void search(String searchText) {
@@ -109,11 +114,11 @@ public class GoogleSearcher {
         createSearchURL();
 
         try {
-            // Document document = Jsoup.connect(searchURL).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").get();
+            Document document = Jsoup.connect(searchURL).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").get();
 
-            DRIVER.get(searchURL);
+            /*DRIVER.get(searchURL);
             String html = DRIVER.getPageSource();
-            Document document = Jsoup.parse(html);
+            Document document = Jsoup.parse(html);*/
 
             Elements aTags = document.getElementsByTag("a");
 
