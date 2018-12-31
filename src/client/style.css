@@ -1,0 +1,246 @@
+body {
+	margin: 0;
+	padding: 0;
+	background: url(wallpaper.jpg);
+	background-size: cover;
+	background-position: center;
+	font-size: 20px;
+	font-family: "Times New Roman", Times, serif;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+h2 {
+	color: #000000;
+	margin-bottom: 0;
+	margin-left: 10px;
+	margin-top: 0;
+	padding-top: 10px;
+	font-size: 20px;
+	font-family: "Times New Roman", Times, serif;
+}
+
+h3 {
+	color: #000;
+	font-size: 20px;
+	font-family: "Times New Roman", Times, serif;
+	margin-bottom: 0;
+	margin-left: 20px;
+	margin-top: 0;
+	padding-top: 10px;
+}
+
+p {
+	color: #000;
+	font-size: 20px;
+	font-family: "Times New Roman", Times, serif;
+	margin-bottom: 0;
+	margin-left: 20px;
+	margin-top: 0;
+	padding-top: 10px;
+	padding-top: 5px;
+	font-weight: bold;
+}
+
+.puzzleWrapper {
+	float: left;
+	margin-left: 100px;
+	margin-top: 100px;
+	margin-bottom: 100px;
+}
+
+.solutionWrapper {
+	float: left;
+	margin-right: 100px;
+	margin-top: 100px;
+	margin-bottom: 100px;
+}
+
+/**********************[ Loading ]*************************/
+
+div#loading {
+	position: absolute;
+	top: 0;
+	bottom: 0%;
+	left: 0;
+	right: 0%;
+	z-index: 99;
+	display: block;
+	background-color: rgba(5, 43, 72, 0.8);
+	display: none;
+}
+
+div#loadingInner {
+	width: 120px;
+	height: 120px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 200px;
+	opacity: 100;
+}
+
+.loader {
+	border: 16px solid #f3f3f3;
+	border-radius: 50%;
+	border-top: 16px solid #00b0ad;
+	border-right: 16px solid #babcbe;
+	border-bottom: 16px solid #97c93d;
+	border-left: 16px solid #babcbe;
+	width: 120px;
+	height: 120px;
+	-webkit-animation: spin 2s linear infinite;
+	animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+	0% { -webkit-transform: rotate(0deg); }
+	100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+.loadingText {
+	text-align: center;
+	font-size: 25pt;
+	font-family: serif;
+	color: white;
+	font-style: italic;
+}
+
+/**********************************************************/
+
+.container {
+	display: flex;
+	justify-content: center;
+}
+
+.box {
+	margin-top: 100px;
+	background: #fff;
+	color: #fff;
+	font-family: Consolas;
+	border-radius: 8px;
+}
+
+.circle {
+	position: absolute;
+	z-index: 5;
+	top: 5px;
+	left: 5px;
+	width: 55px;
+	height: 55px;
+	border-radius: 55px;
+	border-style: solid;
+	border-color: #000000;
+	display: none;
+}
+
+.gridcell {
+	border-style: hidden;
+	background: #fff;
+	cursor: pointer;
+	height: 70px;
+	width: 70px;
+	position: relative;
+	min-height: 70px;
+}
+
+.sol_cell {
+	cursor: default;
+}
+
+.grid {
+	border: #000 3px solid;
+	background: #5b5b69;
+}
+
+.sol_grid {
+	border: #000 3px solid;
+	background: #5b5b69;
+}
+
+.blackcell {
+	background: #000000;
+	color: #000000;
+	cursor: default;
+}
+
+.highlightedcell {
+	background: yellow;
+	color: yellow;
+	cursor: pointer;
+}
+
+.nhighlightedcell {
+	background: #bae9ff;
+	color: #ffffff;
+	cursor: pointer;
+}
+
+.cornertext {
+	position: absolute;
+	z-index: 10;
+	line-height: 20px;
+	font-size: 15px;
+	text-align: left;
+	margin-top: 0;
+	margin-left: 3px;
+}
+
+.centertext {
+	line-height: auto;
+	font-size: 60px;
+	color: blue;
+	position: absolute;
+	bottom: 0;
+	left: 17px;
+}
+
+.middleWrapper {
+	float: left;
+	margin-left: 50px;
+	margin-right: 50px;
+	margin-top: 125px;
+}
+
+.clues {
+	background: #a9daff;
+	border-radius: 8px;
+	padding-right: 10px;
+	padding-bottom: 10px;
+}
+
+.solveButton {
+	margin-top: 10px;
+	background-color: #008CBA; /* Blue */
+	border: none;
+	color: white;
+	padding: 30px;
+	text-align: center;
+	text-decoration: none;
+
+	font-size: 20px;
+	cursor: pointer;
+	border-radius: 12px;
+}
+
+.clueNo {
+	width: 50px;
+	text-align: center;
+	font-weight: bold;
+	float: left;
+}
+
+.clueText {
+	float: left;
+}
+
+.puzzleSelector {
+	float: right;
+	margin-right: 20px;
+}

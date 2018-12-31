@@ -1,0 +1,177 @@
+{
+  "downClues": [
+    {
+      "no": 1,
+      "clue": "Letters on a sunscreen bottle"
+    },
+    {
+      "no": 2,
+      "clue": "Place for a rocking chair and doormat"
+    },
+    {
+      "no": 3,
+      "clue": "Hawaii hi"
+    },
+    {
+      "no": 4,
+      "clue": "Walker on a catwalk"
+    },
+    {
+      "no": 7,
+      "clue": "See 9-Across"
+    }
+  ],
+  "grid": [
+    {
+      "pos": 1,
+      "char": "S"
+    },
+    {
+      "pos": 2,
+      "char": "P"
+    },
+    {
+      "pos": 3,
+      "char": "A"
+    },
+    {
+      "pos": 4,
+      "char": "M"
+    },
+    {
+      "pos": 6,
+      "char": "P"
+    },
+    {
+      "pos": 7,
+      "char": "O"
+    },
+    {
+      "pos": 8,
+      "char": "L"
+    },
+    {
+      "pos": 9,
+      "char": "O"
+    },
+    {
+      "pos": 11,
+      "char": "F"
+    },
+    {
+      "pos": 12,
+      "char": "R"
+    },
+    {
+      "pos": 13,
+      "char": "O"
+    },
+    {
+      "pos": 14,
+      "char": "D"
+    },
+    {
+      "pos": 15,
+      "char": "O"
+    },
+    {
+      "pos": 17,
+      "char": "C"
+    },
+    {
+      "pos": 18,
+      "char": "H"
+    },
+    {
+      "pos": 19,
+      "char": "E"
+    },
+    {
+      "pos": 20,
+      "char": "F"
+    },
+    {
+      "pos": 22,
+      "char": "H"
+    },
+    {
+      "pos": 23,
+      "char": "A"
+    },
+    {
+      "pos": 24,
+      "char": "L"
+    },
+    {
+      "pos": 25,
+      "char": "F"
+    }
+  ],
+  "questionPos": [
+    {
+      "no": 1,
+      "pos": 1
+    },
+    {
+      "no": 2,
+      "pos": 2
+    },
+    {
+      "no": 3,
+      "pos": 3
+    },
+    {
+      "no": 4,
+      "pos": 4
+    },
+    {
+      "no": 5,
+      "pos": 6
+    },
+    {
+      "no": 6,
+      "pos": 11
+    },
+    {
+      "no": 7,
+      "pos": 15
+    },
+    {
+      "no": 8,
+      "pos": 17
+    },
+    {
+      "no": 9,
+      "pos": 22
+    }
+  ],
+  "circles": [],
+  "acrossClues": [
+    {
+      "no": 1,
+      "clue": "Seemingly every phone call, nowadays"
+    },
+    {
+      "no": 5,
+      "clue": "Preppy shirt"
+    },
+    {
+      "no": 6,
+      "clue": "Fictional hero who travels to Mount Doom"
+    },
+    {
+      "no": 8,
+      "clue": "Pot user"
+    },
+    {
+      "no": 9,
+      "clue": "With 7-Down, reduced by 50%"
+    }
+  ],
+  "blackCells": [
+    10,
+    5,
+    16,
+    21
+  ]
+}
